@@ -52,8 +52,21 @@ footer {
 }
 
 #accept-workers-page {
-	display: none;
-	width: 80%;
+	width: 600px;
+}
+
+#accept-workers-page h6 {
+	margin-right: .5rem;
+}
+
+#accept-workers-page .badges {
+	position: absolute;
+    display: inline-flex;
+    right: .5rem;
+}
+
+#accept-workers-page .badge-inner {
+	margin-left: .2rem;
 }
 
 #accept-workers-page button {
@@ -61,6 +74,7 @@ footer {
 }
 
 #top10-workers-page {
+	display: none;
 	width: 600px;
 }
 
