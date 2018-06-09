@@ -18,6 +18,22 @@ using std::string;
 using std::vector;
 using std::array;
 using std::to_string;
+using std::set;
+
+#define BEESOCIAL_SYMBOL (eosio::string_to_symbol(4, "BEESOCIAL"))
+
+enum project_status {
+    project_created = 0,
+    project_started = 1,
+    project_complete = 2
+};
+
+enum request_status {
+    request_enabled = 0,
+    request_disabled = 1,
+    request_confirm = 2,
+    request_failed = 3
+};
 
 class beesocial: public eosio::contract {
 public:
@@ -30,7 +46,8 @@ public:
           npos(_self, _self),
           categorities(_self, _self),
           resources(_self, _self),
-          projects(_self, _self) {
+          projects(_self, _self),
+          requests(_self, _self) {
     }
 
     // @abi action
@@ -289,14 +306,16 @@ public:
         time_point_sec created,
         time_point_sec date_from,
         time_point_sec date_to,
-        uint8_t status,
-        asset price
+        asset price,
+        uint32_t required
     ) {
         print("bee_social::project\n");
 
         validate_title(title);
         validate_description(description);
         validate_skills(skills);
+
+        eosio_assert(required > 0, "Required workers should be more than zero");
 
         auto nit = npos.find(npo);
         eosio_assert(nit != npos.end(), "NPO doesn't exists");
@@ -316,18 +335,70 @@ public:
                 s.created = created;
                 s.date_from = date_from;
                 s.date_to = date_to;
-                s.status = status;
+                s.status = project_created;
                 s.price = price;
+                s.required = required;
             });
         } else {
+            eosio_assert(it->status == project_created, "Project can't be modified.");
+
             idx.modify(it, 0, [&](auto& s){
                 s.description = description;
                 s.skills = skills;
                 s.created = created;
                 s.date_from = date_from;
                 s.date_to = date_to;
-                s.status = status;
                 s.price = price;
+                s.required = required;
+            });
+        }
+    }
+
+    // @abi action
+    void request(
+        uint64_t project,
+        uint64_t worker,
+        uint8_t status
+    ) {
+        print("bee_social::request\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_started, "Project isn't started");
+
+        auto wit = workers.find(worker);
+        eosio_assert(wit != workers.end(), "Worker doesn't exist");
+        eosio_assert((*wit).enabled, "Worker is disabled");
+
+        eosio_assert(status == request_enabled || status == request_disabled, "Invalid status");
+
+        auto key = (static_cast<uint128_t>(project) << 64) + worker;
+        auto idx = requests.template get_index<N(request.keys)>();
+        auto it = idx.find(key);
+
+        if (it == idx.end()) {
+            set<uint64_t> skills((*pit).skills.begin(), (*pit).skills.end());
+            bool has_skill = false;
+
+            for (auto sit = (*wit).skills.begin(); !has_skill && sit != (*wit).skills.end(); ++sit) {
+                has_skill = skills.count(*sit);
+            }
+
+            eosio_assert(has_skill, "Worker doesn't have required skills");
+
+            requests.emplace(_self, [&](auto& s) {
+                s.id = requests.available_primary_key();
+                s.project = project;
+                s.worker = worker;
+                s.status = status;
+                s.created = time_point_sec(now());
+                s.reward = asset(0, BEESOCIAL_SYMBOL);
+            });
+        } else {
+            eosio_assert(it->status != request_failed, "Request is disabled by NPO");
+
+            idx.modify(it, 0, [&](auto& s){
+                s.status = status;
             });
         }
     }
@@ -382,6 +453,8 @@ private:
     }
 
     void validate_skills(const vector<uint64_t>& check_skills) const {
+        eosio_assert(!check_skills.empty(), "Skills can't be empty");
+
         for (auto sit = check_skills.begin(); sit != check_skills.end(); ++sit) {
             auto fit = skills.find(*sit);
             eosio_assert(fit != skills.end(), "Skill doesn't exists");
@@ -404,9 +477,7 @@ private:
     }
 
     void validate_asset(const asset& value) const {
-        static auto beesocial_symbol = eosio::string_to_symbol(4, "BEESOCIAL");
-
-        eosio_assert(value.symbol == beesocial_symbol, "Only BEESOCIAL token allowed");
+        eosio_assert(value.symbol == BEESOCIAL_SYMBOL, "Only BEESOCIAL token allowed");
         eosio_assert(value.is_valid(), "Invalid asset");
         eosio_assert(value.amount > 0, "Asset must have positive quantity");
     }
@@ -620,6 +691,7 @@ private:
         time_point_sec date_to;
         uint8_t status;
         asset price;
+        uint32_t required;
 
         uint64_t primary_key() const {
             return id;
@@ -633,7 +705,7 @@ private:
             return beesocial::string_to_key256(get_key());
         }
 
-        EOSLIB_SERIALIZE(project_t, (id)(npo)(title)(description)(skills)(created)(date_from)(date_to)(status)(price));
+        EOSLIB_SERIALIZE(project_t, (id)(npo)(title)(description)(skills)(created)(date_from)(date_to)(status)(price)(required));
     };
 
     using project_index = multi_index<
@@ -642,6 +714,33 @@ private:
     >;
 
     project_index projects;
+
+    //@abi table requests i64
+    struct request_t {
+        uint64_t id;
+        uint64_t project;
+        uint64_t worker;
+        time_point_sec created;
+        int8_t status;
+        asset reward;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        uint128_t by_key() const {
+            return (static_cast<uint128_t>(project) << 64) + worker;
+        }
+
+        EOSLIB_SERIALIZE(request_t, (id)(project)(worker)(created)(status)(reward));
+    };
+
+    using request_index = multi_index<
+        N(requests), request_t,
+        indexed_by<N(request.keys), const_mem_fun<request_t, uint128_t, &request_t::by_key>>
+    >;
+
+    request_index requests;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project))
+EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request))
