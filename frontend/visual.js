@@ -16,6 +16,7 @@ let resourceModal = new Modal($resourceModal);
 let $createProjectModal = document.getElementById('create-project-modal');
 let createProjectModal = new Modal($createProjectModal);
 let $resourceItem = document.querySelector('#resource-item');
+let modalAuth = new Modal(document.getElementById('auth'));
 let resourceItemSelected;
 
 let arr = document.querySelector('#projects').querySelectorAll('.btn');
