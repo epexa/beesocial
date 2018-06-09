@@ -9,3 +9,13 @@
     left: 50%;
 	transform: translate(-50%, -50%);
 }
+
+#projects {
+	display: none;
+	height: 400px;
+}
+
+.card {
+	width: 18rem;
+	margin: .5rem;
+}
