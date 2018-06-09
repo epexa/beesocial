@@ -298,6 +298,10 @@ public:
         validate_description(description);
         validate_skills(skills);
 
+        auto nit = npos.find(npo);
+        eosio_assert(nit != npos.end(), "NPO doesn't exists");
+        eosio_assert((*nit).enabled, "NPO is disabled");
+
         auto key = to_string(npo) + ":" + title;
         auto idx = projects.template get_index<N(project.keys)>();
         auto it = find_key256_fun<project_t, &project_t::get_key>(idx, key);
