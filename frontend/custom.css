@@ -56,6 +56,10 @@ footer {
 	width: 80%;
 }
 
+#accept-workers-page button {
+	height: 2rem;
+}
+
 .lding {
     background: black;
     position: fixed;
