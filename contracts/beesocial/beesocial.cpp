@@ -24,7 +24,8 @@ public:
           skills(_self, _self),
           workers(_self, _self),
           activities(_self, _self),
-          npos(_self, _self) {
+          npos(_self, _self),
+          categorities(_self, _self) {
     }
 
     // @abi action
@@ -168,6 +169,32 @@ public:
         }
     }
 
+    // @abi action
+    void category(const string& title, const uint8_t type, bool enabled) {
+        print("bee_social::categority\n");
+
+        eosio_assert(title.size() > 0, "Title can't be empty");
+        eosio_assert(title.size() < 512, "Title is too big");
+
+        auto idx = categorities.template get_index<N(categority.titles)>();
+        auto it = find_key256<categority_t, &categority_t::title>(idx, title);
+
+        if (it == idx.end()) {
+            categorities.emplace(_self, [&](auto& s) {
+                s.id = categorities.available_primary_key();
+                s.title = title;
+                s.type = type;
+                s.enabled = enabled;
+            });
+        } else {
+            idx.modify(it, 0, [&](auto& s){
+                s.title = title;
+                s.type = type;
+                s.enabled = enabled;
+            });
+        }
+    }
+
     static key256 string_to_key256(const std::string& src) {
         array<uint64_t, 4> v;
         v.fill(0ULL);
@@ -303,6 +330,31 @@ private:
     >;
 
     npo_index npos;
+
+    //@abi table categorities i64
+    struct categority_t {
+        uint64_t id;
+        string title;
+        uint8_t type;
+        bool enabled;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        key256 by_title() const {
+            return beesocial::string_to_key256(title);
+        }
+
+        EOSLIB_SERIALIZE(categority_t, (id)(title)(type)(enabled));
+    };
+
+    using categority_index = multi_index<
+    N(categorities), categority_t,
+        indexed_by<N(categority.titles), const_mem_fun<categority_t, key256, &categority_t::by_title>>
+    >;
+
+    categority_index categorities;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker)(activity)(npo))
+EOSIO_ABI(beesocial, (skill)(worker)(activity)(npo)(category))
