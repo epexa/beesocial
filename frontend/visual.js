@@ -5,6 +5,18 @@ let $projectsPage = document.querySelector('#projects-page');
 let $projects = $projectsPage.querySelector('#projects');
 let $projectModal = document.getElementById('project-modal');
 let projectModal = new Modal($projectModal);
+let $purchasedResourcesPage = document.querySelector('#purchased-resources-page');
+let $purchasedResourcesTbody = document.querySelector('#purchased-resources tbody');
+let $resourcesPage = document.querySelector('#resources-page');
+let $resources = $resourcesPage.querySelector('#resources');
+let $createResourceModal = document.getElementById('create-resource-modal');
+let createResourceModal = new Modal($createResourceModal);
+let $resourceModal = document.getElementById('resource-modal');
+let resourceModal = new Modal($resourceModal);
+let $createProjectModal = document.getElementById('create-project-modal');
+let createProjectModal = new Modal($createProjectModal);
+let $resourceItem = document.querySelector('#resource-item');
+let resourceItemSelected;
 
 let arr = document.querySelector('#projects').querySelectorAll('.btn');
 arr.forEach(function(item, i, arr) {
