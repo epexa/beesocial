@@ -15,10 +15,10 @@ eos.getCode({ account_name: 'beesocial' }, (err, res) => {
 	else console.error(err);
 });
 
-let resourceItemSelected;
+/* let resourceItemSelected;
 let $resourcesPage = document.querySelector('#resources-page');
 let $resources = $resourcesPage.querySelector('#resources');
-let $resourceItem = document.querySelector('#resource-item');
+let $resourceItem = document.querySelector('#resource-item'); */
 
 eos.getTableRows({
 	scope: 'beesocial',
@@ -30,7 +30,7 @@ eos.getTableRows({
 		res.rows.forEach(item => {
 			console.log('item', item);
 			
-			let $newItem = $resourceItem.cloneNode(true);
+			/* let $newItem = $resourceItem.cloneNode(true);
 			$newItem.querySelector('.card-title').innerHTML = item.title;
 			$newItem.querySelector('.card-text').innerHTML = item.description;
 			$newItem.setAttribute('data-id', item.id);
@@ -44,7 +44,7 @@ eos.getTableRows({
 				resourceModal.show();
 			});
 			$newItem.style.display = 'block';
-			$resources.appendChild($newItem);
+			$resources.appendChild($newItem); */
 			
 		});
 	}
