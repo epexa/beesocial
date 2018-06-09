@@ -27,7 +27,7 @@ public:
           npos(_self, _self) {
     }
 
-    //@abi action
+    // @abi action
     void skill(const string& title, bool enabled) {
         print("bee_social::skill\n");
 
@@ -51,7 +51,7 @@ public:
         }
     }
 
-    //@abi action
+    // @abi action
     void worker(
         account_name account,
         const string& full_name,
@@ -85,7 +85,8 @@ public:
                 s.location = location;
                 s.sex = sex;
                 s.birth_date = birth_date;
-                s.score = 0;
+                s.positive = 0;
+                s.negative = 0;
                 s.skills = worker_skills;
                 s.enabled = enabled;
             });
@@ -103,7 +104,7 @@ public:
         }
     }
 
-    //@abi action
+    // @abi action
     void activity(const string& title, bool enabled) {
         print("bee_social::activity\n");
 
@@ -127,7 +128,7 @@ public:
         }
     }
 
-    //@abi action
+    // @abi action
     void npo(
         account_name account,
         string title,
@@ -228,7 +229,8 @@ private:
         uint8_t sex;
         time_point_sec birth_date;
         vector<uint64_t> skills;
-        uint32_t score;
+        uint32_t positive;
+        uint32_t negative;
         bool enabled;
 
         uint64_t primary_key() const {
@@ -239,7 +241,7 @@ private:
             return account;
         }
 
-        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(sex)(birth_date)(skills)(score)(enabled));
+        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(sex)(birth_date)(skills)(positive)(negative)(enabled));
     };
 
     using worker_index = multi_index<
@@ -303,4 +305,4 @@ private:
     npo_index npos;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker))
+EOSIO_ABI(beesocial, (skill)(worker)(activity)(npo))
