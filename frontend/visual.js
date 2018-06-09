@@ -102,7 +102,7 @@ document.getElementById('signin').addEventListener('click', function () {
 	modalSignin.show();
 });
 
-document.getElementById('encouraging-employees').quer.addEventListener('click', function () {
+document.getElementById('encouraging-employees').querySelectorAll('.review').addEventListener('click', function () {
 	modalSignin.show();
 });
 
