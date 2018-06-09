@@ -23,7 +23,8 @@ public:
         : eosio::contract(self),
           skills(_self, _self),
           workers(_self, _self),
-          activities(_self, _self) {
+          activities(_self, _self),
+          npos(_self, _self) {
     }
 
     //@abi action
@@ -73,7 +74,7 @@ public:
             eosio_assert(fit->enabled, "Skill is disabled");
         }
 
-        auto idx = workers.template get_index<N(worker.names)>();
+        auto idx = workers.template get_index<N(worker.accounts)>();
         auto it = idx.find(account);
 
         if (it == idx.end()) {
@@ -121,6 +122,46 @@ public:
         } else {
             idx.modify(it, 0, [&](auto& s){
                 s.title = title;
+                s.enabled = enabled;
+            });
+        }
+    }
+
+    //@abi action
+    void npo(
+        account_name account,
+        string title,
+        string description,
+        string location,
+        bool enabled
+    ) {
+        print("bee_social::npo\n");
+
+        eosio_assert(title.size() > 0, "Title can't be empty");
+        eosio_assert(title.size() < 128, "Title is too big");
+        eosio_assert(description.size() < 4096, "Description is too big");
+        eosio_assert(location.size() > 0, "Location can't be empty");
+        eosio_assert(location.size() < 128, "Location is too big");
+
+        auto idx = npos.template get_index<N(npo.accounts)>();
+        auto it = idx.find(account);
+
+        if (it == idx.end()) {
+            npos.emplace(_self, [&](auto& s) {
+                s.id = workers.available_primary_key();
+                s.account = account;
+                s.title = title;
+                s.description = description;
+                s.location = location;
+                s.positive = 0;
+                s.negative = 0;
+                s.enabled = enabled;
+            });
+        } else {
+            idx.modify(it, 0, [&](auto& s){
+                s.title = title;
+                s.description = description;
+                s.location = location;
                 s.enabled = enabled;
             });
         }
@@ -203,7 +244,7 @@ private:
 
     using worker_index = multi_index<
         N(workers), worker_t,
-        indexed_by<N(worker.names), const_mem_fun<worker_t, account_name, &worker_t::by_account>>
+        indexed_by<N(worker.accounts), const_mem_fun<worker_t, account_name, &worker_t::by_account>>
     >;
 
     worker_index workers;
@@ -231,6 +272,35 @@ private:
     >;
 
     activity_index activities;
+
+    //@abi table npos i64
+    struct npo_t {
+        uint64_t id;
+        account_name account;
+        string title;
+        string description;
+        string location;
+        uint32_t positive;
+        uint32_t negative;
+        bool enabled;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        uint64_t by_account() const {
+            return account;
+        }
+
+        EOSLIB_SERIALIZE(npo_t, (id)(account)(title)(description)(location)(positive)(negative)(enabled));
+    };
+
+    using npo_index = multi_index<
+        N(npos), npo_t,
+        indexed_by<N(npo.accounts), const_mem_fun<npo_t, account_name, &npo_t::by_account>>
+    >;
+
+    npo_index npos;
 };
 
 EOSIO_ABI(beesocial, (skill)(worker))
