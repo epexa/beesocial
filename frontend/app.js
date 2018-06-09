@@ -19,6 +19,14 @@ eos.getCode({ account_name: 'beesocial' }, (err, res) => {
 	else console.error(err);
 });
 
+let $loader = document.getElementsByClassName('lding')[0];
+let loadingShow = function() {
+	$loader.style.display = 'block';
+};
+let loadingHide = function() {
+	$loader.style.display = 'none';
+};
+
 /* let resourceItemSelected;
 let $resourcesPage = document.querySelector('#resources-page');
 let $resources = $resourcesPage.querySelector('#resources');
@@ -55,6 +63,55 @@ eos.getTableRows({
 	else console.error(err);
 });
 
-eos.transaction('beesocial', function(operation) {
-	operation.create('eoshackathon', 'event', '100.000 HONEYCOMBS', 1, 10, 'EOS Hackathon in Hong Kong', {authorization: 'alice'}); // alice@active
+let modalAuth = new Modal(document.getElementById('auth'));
+let $login = document.getElementById('login');
+let $logout = document.getElementById('logout');
+
+document.getElementById('form-login-pass').addEventListener('submit', e => {
+	e.preventDefault();
+	let log = document.getElementById('logged').checked,
+		user = document.getElementById('input-user').value,
+		pass = document.getElementById('input-pass').value;
+	let username = user;
+	let wif = pass;
+	log ? localStorage.username = username : '';
+	log ? localStorage.wif = JSON.stringify(wif) : {};
+	$login.style.display = 'none';
+	$logout.style.display = 'inline-block';
+	modalAuth.hide();
+	if (callbackAuth) callbackAuth();
+});
+
+let auth = function(callback) {
+	if (wif && username) callback();
+	else {
+		modalAuth.show();
+		callbackAuth = callback;
+	}
+};
+
+//
+$login.addEventListener('click', function() {
+	modalAuth.show();
+});
+
+let $createResourceModalForm = $createResourceModal.querySelector('form');
+$createResourceModalForm.addEventListener('submit', function(e) {
+	e.preventDefault();
+	let title = this.title.value,
+		combs = this.combs.value,
+		howGet = this.howget.value,
+		description = this.description.value,
+		contacts = this.contacts.value,
+		author = username;
+	auth(function() {
+		loadingShow();
+		eos.transaction('beesocial', (operation) => {
+			operation.create(title, 'event', combs + ' HONEYCOMBS', 1, howGet, description, contacts, {authorization: author}); // alice@active
+			loadingHide();
+			$createResourceModalForm.reset();
+			createResourceModal.hide();
+			//window.location.hash = '#resources/' + id;
+		});
+	});
 });
