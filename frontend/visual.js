@@ -21,6 +21,8 @@ let editNpoModal = new Modal(document.getElementById('edit-npo-modal'));
 let editSponsorsModal = new Modal(document.getElementById('edit-sponsors-modal'));
 let modalSignin = new Modal(document.getElementById('signin-modal'));
 let modalReviewEmployee = new Modal(document.getElementById('review-employee'));
+let modalDonateNpos = new Modal(document.getElementById('donation-npos-modal'));
+let modalDescriptionNpos = new Modal(document.getElementById('description-npos-modal'));
 let resourceItemSelected;
 
 let arr = document.querySelector('#projects').querySelectorAll('.btn');
@@ -34,6 +36,20 @@ arr = document.getElementById('encouraging-employees').querySelectorAll('.review
 arr.forEach(function (item, i, arr) {
 	arr[i].addEventListener('click', function () {
 		modalReviewEmployee.show();
+	});
+});
+
+arr = document.getElementById('donation-npos').querySelectorAll('.donate');
+arr.forEach(function (item, i, arr) {
+	arr[i].addEventListener('click', function () {
+		modalDonateNpos.show();
+	});
+});
+
+arr = document.getElementById('donation-npos').querySelectorAll('.description');
+arr.forEach(function (item, i, arr) {
+	arr[i].addEventListener('click', function () {
+		modalDescriptionNpos.show();
 	});
 });
 

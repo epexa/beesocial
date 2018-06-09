@@ -217,6 +217,45 @@
 					</tbody>
 				</table>
 			</div>
+			<div id="donation-npos">
+			<label>Donation for a non-profit organizations</label>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">NPO`s name</th>
+							<th scope="col">description</th>
+							<th scope="col">make donation</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">1</th>
+							<td>Mark</td>
+							<td><button type="button" class="btn btn-success btn-sm description">view description</button></td>
+							<td class="btn-group" role="group">
+								<button type="button" class="btn btn-success btn-sm donate">donate</button>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">2</th>
+							<td>Jacob</td>
+							<td><button type="button" class="btn btn-success btn-sm description">view description</button></td>
+							<td class="btn-group" role="group">
+								<button type="button" class="btn btn-success btn-sm donate">donate</button>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">3</th>
+							<td>Larry</td>
+							<td><button type="button" class="btn btn-success btn-sm description">view description</button></td>
+							<td class="btn-group" role="group">
+								<button type="button" class="btn btn-success btn-sm donate">donate</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 			<div id="projects-page">
 				<div style="display: inline-flex; height: 2.5rem; width: 100%;">
 					<label class="create-project">Geolocation</label>
@@ -549,6 +588,44 @@
 					</div>
 					<div class="modal-footer">
 						<button type="submit" class="btn btn-success" id="buy-resource-btn">Purchase review</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal" id="donation-npos-modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Please enter the size of the donation and confirm</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="location">Count of honeycombs:</label>
+							<input type="text" class="form-control" id="activity-sponsor" name="honeycombs-donate" required="">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success" id="buy-resource-btn">Confirm donation</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal" id="description-npos-modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Non-profit organization description</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="location">BeeSocial is best social project you`ve ever seen</label>
+						</div>
 					</div>
 				</div>
 			</div>
