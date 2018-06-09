@@ -1,7 +1,7 @@
 let options = {
 	httpEndpoint: 'http://192.168.43.240:8888',
 	debug: true,
-	keyProvider: '5Jmsawgsp1tQ3GD6JyGCwy1dcvqKZgX6ugMVMdjirx85iv5VyPR', // PW5KATTYpBNPdj4BAqGoBGBntQGtdyzdY3xn45TCZqso1cBtGn3k5
+	keyProvider: '5JwLcd2FtEKrUxKH7GuVKzaYiYtyyp5MirqXLvi9s2wuLbq7kK1', // PW5KATTYpBNPdj4BAqGoBGBntQGtdyzdY3xn45TCZqso1cBtGn3k5
 	//authorization: 'alice@active',
 	sign: true,
 	//broadcast: true
@@ -20,10 +20,10 @@ eos.getCode({ account_name: 'beesocial' }, (err, res) => {
 });
 
 let $loader = document.getElementsByClassName('lding')[0];
-let loadingShow = function() {
+let loadingShow = () => {
 	$loader.style.display = 'block';
 };
-let loadingHide = function() {
+let loadingHide = () => {
 	$loader.style.display = 'none';
 };
 
@@ -35,7 +35,7 @@ let $resourceItem = document.querySelector('#resource-item'); */
 eos.getTableRows({
 	scope: 'beesocial',
 	code: 'beesocial',
-	table: 'skill',
+	table: 'skills',
 	json: true
 }, (err, res) => {
 	if ( ! err) {
@@ -46,7 +46,7 @@ eos.getTableRows({
 			$newItem.querySelector('.card-title').innerHTML = item.title;
 			$newItem.querySelector('.card-text').innerHTML = item.description;
 			$newItem.setAttribute('data-id', item.id);
-			$newItem.querySelector('button').addEventListener('click', function() {
+			$newItem.querySelector('button').addEventListener('click', () => {
 				resourceItemSelected = item;
 				$resourceModal.querySelector('#resource-title').innerHTML = item.title;
 				$resourceModal.querySelector('#resource-description').innerHTML = item.description;
@@ -63,7 +63,6 @@ eos.getTableRows({
 	else console.error(err);
 });
 
-let modalAuth = new Modal(document.getElementById('auth'));
 let $login = document.getElementById('login');
 let $logout = document.getElementById('logout');
 
@@ -82,7 +81,7 @@ document.getElementById('form-login-pass').addEventListener('submit', e => {
 	if (callbackAuth) callbackAuth();
 });
 
-let auth = function(callback) {
+let auth = (callback) => {
 	if (wif && username) callback();
 	else {
 		modalAuth.show();
@@ -91,12 +90,12 @@ let auth = function(callback) {
 };
 
 //
-$login.addEventListener('click', function() {
+$login.addEventListener('click', () => {
 	modalAuth.show();
 });
 
 let $createResourceModalForm = $createResourceModal.querySelector('form');
-$createResourceModalForm.addEventListener('submit', function(e) {
+$createResourceModalForm.addEventListener('submit', e => {
 	e.preventDefault();
 	let title = this.title.value,
 		combs = this.combs.value,
@@ -104,7 +103,7 @@ $createResourceModalForm.addEventListener('submit', function(e) {
 		description = this.description.value,
 		contacts = this.contacts.value,
 		author = username;
-	auth(function() {
+	auth(() => {
 		loadingShow();
 		eos.transaction('beesocial', (operation) => {
 			operation.create(title, 'event', combs + ' HONEYCOMBS', 1, howGet, description, contacts, {authorization: author}); // alice@active
