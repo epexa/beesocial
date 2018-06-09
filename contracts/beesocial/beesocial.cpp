@@ -340,9 +340,11 @@ public:
                 s.status = project_created;
                 s.price = price;
                 s.required = required;
+                s.hired = 0;
             });
         } else {
-            eosio_assert(it->status == project_created, "Project can't be modified.");
+            eosio_assert(it->status == project_created, "Project can't be modified after started/canceled/complete.");
+            eosio_assert(it->hired <= required, "Project has hired more workers, than required");
 
             idx.modify(it, 0, [&](auto& s){
                 s.description = description;
@@ -383,6 +385,9 @@ public:
             }
 
             eosio_assert(has_skill, "Worker doesn't have required skills");
+            eosio_assert(
+                status == request_disabled || (*pit).required > (*pit).hired,
+                "Project has hired the required number of workers");
 
             requests.emplace(_self, [&](auto& s) {
                 s.id = requests.available_primary_key();
@@ -392,8 +397,25 @@ public:
                 s.created = time_point_sec(now());
                 s.reward = asset(0, BEESOCIAL_SYMBOL);
             });
+
+            if (status == request_enabled) {
+                projects.modify(pit, 0, [&](auto& p){
+                    p.hired++;
+                });
+            }
         } else {
             eosio_assert(it->status != request_failed, "Request is disabled by NPO");
+
+            if (it->status == request_enabled && status == request_disabled) {
+                projects.modify(pit, 0, [&](auto& p){
+                    p.hired--;
+                });
+            } else if (it->status == request_disabled && status == request_enabled) {
+                eosio_assert((*pit).hired < (*pit).required, "Project has hired the required number of workers");
+                projects.modify(pit, 0, [&](auto& p){
+                    p.hired++;
+                });
+            }
 
             idx.modify(it, 0, [&](auto& s){
                 s.status = status;
@@ -407,7 +429,7 @@ public:
 
         auto pit = projects.find(project);
         eosio_assert(pit != projects.end(), "Project doesn't exist");
-        eosio_assert((*pit).status == project_created, "Project status is incorrect");
+        eosio_assert((*pit).status == project_created, "Project can't start after started/canceled/complete.");
 
         // TRANSFER from npo
 
@@ -445,7 +467,7 @@ public:
 
         auto pit = projects.find(project);
         eosio_assert(pit != projects.end(), "Project doesn't exist");
-        eosio_assert((*pit).status == project_created, "Project status is incorrect");
+        eosio_assert((*pit).status == project_created, "Project can't cancel after started/canceled/complete.");
 
         projects.modify(pit, 0, [&](auto& p) {
             p.status = project_canceled;
@@ -783,6 +805,7 @@ private:
         uint8_t status;
         asset price;
         uint32_t required;
+        uint32_t hired;
 
         uint64_t primary_key() const {
             return id;
