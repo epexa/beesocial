@@ -22,7 +22,8 @@ public:
     beesocial(account_name self)
         : eosio::contract(self),
           skills(_self, _self),
-          workers(_self, _self) {
+          workers(_self, _self),
+          activities(_self, _self) {
     }
 
     //@abi action
@@ -92,6 +93,30 @@ public:
                 s.location = location;
                 s.birth_date = birth_date;
                 s.skills = worker_skills;
+                s.enabled = enabled;
+            });
+        }
+    }
+
+    //@abi action
+    void activity(const string& title, bool enabled) {
+        print("bee_social::activity\n");
+
+        eosio_assert(title.size() > 0, "Title can't be empty");
+        eosio_assert(title.size() < 512, "Title is too big");
+
+        auto idx = activities.template get_index<N(activity.titles)>();
+        auto it = find_key256<activity_t, &activity_t::title>(idx, title);
+
+        if (it == idx.end()) {
+            activities.emplace(_self, [&](auto& s) {
+                s.id = activities.available_primary_key();
+                s.title = title;
+                s.enabled = enabled;
+            });
+        } else {
+            idx.modify(it, 0, [&](auto& s){
+                s.title = title;
                 s.enabled = enabled;
             });
         }
@@ -177,6 +202,29 @@ private:
 
     worker_index workers;
 
+    //@abi table activities i64
+    struct activity_t {
+        uint64_t id;
+        string title;
+        bool enabled;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        key256 by_title() const {
+            return beesocial::string_to_key256(title);
+        }
+
+        EOSLIB_SERIALIZE(activity_t, (id)(title)(enabled));
+    };
+
+    using activity_index = multi_index<
+        N(activities), activity_t,
+        indexed_by<N(activity.titles), const_mem_fun<activity_t, key256, &activity_t::by_title>>
+    >;
+
+    activity_index activities;
 };
 
 EOSIO_ABI(beesocial, (skill)(worker))
