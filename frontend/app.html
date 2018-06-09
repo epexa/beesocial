@@ -41,6 +41,7 @@
 								<button class="btn btn-primary my-2 my-sm-0" id="logout"><span class="icon-exit"></span> Logout</button>
 							</div>
 						</div>
+						<label style="margin-right: .5rem; color: #fff;">Username</label>
 						<button class="btn btn-primary btn-info my-2 my-sm-0" id="login" style="margin-right: .5rem;"><span class="icon-exit"></span> Login</button>
 						<span style="margin-right: .5rem; color: #fff;"> or </span>
 						<button class="btn btn-primary btn-success my-2 my-sm-0" id="signin"><span class="icon-exit"></span> Sing in</button>
@@ -92,64 +93,60 @@
 				</div>
 			</div>
 			<div id="accept-workers-page">
-				<label>Requests from workers</label>
-				<div data-spy="scroll" data-target="#navbar-example2" data-offset="0">
+				<label>Accepted workers <span class="badge badge-primary">0/30</span></label>
 					<ul class="list-group">
 						<li class="list-group-item"><h6>Ivan Ivanov</h4>
-						<div class="container">
-						  <div class="row">
-							<div class="col">
-							  1 of 3
-							</div>
-							<div class="col">
-							<h6><span class="badge badge-success">likes<span class="badge badge-light">9</span></span></h6>
-							<h6><span class="badge badge-danger">dislikes<span class="badge badge-light">0</span></span></h6>
-							<h6><span class="badge badge-warning">rating<span class="badge badge-light">300</span></span></h6>
-							</div>
-							<button type="button" class="btn btn-outline-success btn-sm">Approve</button>
+							<span class="badges">
+								<h6><span class="badge badge-success">likes<span class="badge badge-light badge-inner">9</span></span></h6>
+								<h6><span class="badge badge-danger">dislikes<span class="badge badge-light badge-inner">0</span></span></h6>
+								<h6><span class="badge badge-warning">rating<span class="badge badge-light badge-inner">300</span></span></h6>
+								<button type="button" class="btn btn-outline-success btn-sm">Accept</button>
+							</span>
 						</li>
 						<li class="list-group-item"><h6>lijn LKMl</h4>
-							<h6><span class="badge badge-success">likes<span class="badge badge-light">9</span></span></h6>
-							<h6><span class="badge badge-danger">dislikes<span class="badge badge-light">0</span></span></h6>
-							<h6><span class="badge badge-warning">rating<span class="badge badge-light">300</span></span></h6>
-							<button type="button" class="btn btn-outline-success btn-sm">Approve</button>
+							<span class="badges">
+								<h6><span class="badge badge-success">likes<span class="badge badge-light badge-inner">9</span></span></h6>
+								<h6><span class="badge badge-danger">dislikes<span class="badge badge-light badge-inner">0</span></span></h6>
+								<h6><span class="badge badge-warning">rating<span class="badge badge-light badge-inner">300</span></span></h6>
+								<button type="button" class="btn btn-outline-success btn-sm">Accept</button>
+							</span>
 						</li>
 						<li class="list-group-item"><h6>:LKM' ;l,kM</h4>
-							<h6><span class="badge badge-success">likes<span class="badge badge-light">9</span></span></h6>
-							<h6><span class="badge badge-danger">dislikes<span class="badge badge-light">0</span></span></h6>
-							<h6><span class="badge badge-warning">rating<span class="badge badge-light">300</span></span></h6>
-							<button type="button" class="btn btn-outline-success btn-sm">Approve</button>
+							<span class="badges">
+								<h6><span class="badge badge-success">likes<span class="badge badge-light badge-inner">9</span></span></h6>
+								<h6><span class="badge badge-danger">dislikes<span class="badge badge-light badge-inner">0</span></span></h6>
+								<h6><span class="badge badge-warning">rating<span class="badge badge-light badge-inner">300</span></span></h6>
+								<button type="button" class="btn btn-outline-success btn-sm">Accept</button>
+							</span>
 						</li>
 					</ul>
 				</div>
-			</div></div></div>
 			<div id="top10-workers-page">
 				<label>Top 10 workers</label>
 					<ul class="list-group">
-						<li class="list-group-item"><h6>Ivan Ivanov</h4>
-						<div class="container">
-						  <div class="row">
-							<div class="col">
-							  1 of 3
-							</div>
-							<div class="col">
-							<h6><span class="badge badge-success">likes<span class="badge badge-light">9</span></span></h6>
-							<h6><span class="badge badge-danger">dislikes<span class="badge badge-light">0</span></span></h6>
-							<h6><span class="badge badge-warning">rating<span class="badge badge-light">300</span></span></h6>
-							</div>
+						<li class="list-group-item"><h6>1. Ivan Ivanov</h4>
+							<span class="badges">
+								<h6><span class="badge badge-success">likes<span class="badge badge-light badge-inner">999</span></span></h6>
+								<h6><span class="badge badge-danger">dislikes<span class="badge badge-light badge-inner">20</span></span></h6>
+								<h6><span class="badge badge-warning">rating<span class="badge badge-light badge-inner">689</span></span></h6>
+							</span>
 						</li>
-						<li class="list-group-item"><h6>lijn LKMl</h4>
-							<h6><span class="badge badge-success">likes<span class="badge badge-light">9</span></span></h6>
-							<h6><span class="badge badge-danger">dislikes<span class="badge badge-light">0</span></span></h6>
-							<h6><span class="badge badge-warning">rating<span class="badge badge-light">300</span></span></h6>
+						<li class="list-group-item"><h6>2. lijn LKMl</h4>
+							<span class="badges">
+								<h6><span class="badge badge-success">likes<span class="badge badge-light badge-inner">654</span></span></h6>
+								<h6><span class="badge badge-danger">dislikes<span class="badge badge-light badge-inner">30</span></span></h6>
+								<h6><span class="badge badge-warning">rating<span class="badge badge-light badge-inner">300</span></span></h6>
+							</span>
 						</li>
-						<li class="list-group-item"><h6>:LKM' ;l,kM</h4>
-							<h6><span class="badge badge-success">likes<span class="badge badge-light">9</span></span></h6>
-							<h6><span class="badge badge-danger">dislikes<span class="badge badge-light">0</span></span></h6>
-							<h6><span class="badge badge-warning">rating<span class="badge badge-light">300</span></span></h6>
+						<li class="list-group-item"><h6>6599. You</h4>
+							<span class="badges">
+								<h6><span class="badge badge-success">likes<span class="badge badge-light badge-inner">1</span></span></h6>
+								<h6><span class="badge badge-danger">dislikes<span class="badge badge-light badge-inner">0</span></span></h6>
+								<h6><span class="badge badge-warning">rating<span class="badge badge-light badge-inner">0</span></span></h6>
+							</span>
 						</li>
 					</ul>
-				</div></div></div>
+				</div>
 			<div id="projects-page">
 				<div style="display: inline-flex; height: 2.5rem; width: 100%;">
 					<label class="create-project">Geolocation</label>

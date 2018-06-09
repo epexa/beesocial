@@ -53,11 +53,44 @@ footer {
 
 #accept-workers-page {
 	display: none;
-	width: 80%;
+	width: 600px;
+}
+
+#accept-workers-page h6 {
+	margin-right: .5rem;
+}
+
+#accept-workers-page .badges {
+	position: absolute;
+    display: inline-flex;
+    right: .5rem;
+}
+
+#accept-workers-page .badge-inner {
+	margin-left: .2rem;
 }
 
 #accept-workers-page button {
 	height: 2rem;
+}
+
+#top10-workers-page {
+	display: none;
+	width: 600px;
+}
+
+#top10-workers-page h6 {
+	margin-right: .5rem;
+}
+
+#top10-workers-page .badges {
+	position: absolute;
+    display: inline-flex;
+    right: 0;
+}
+
+#top10-workers-page .badge-inner {
+	margin-left: .2rem;
 }
 
 .lding {
