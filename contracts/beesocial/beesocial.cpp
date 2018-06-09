@@ -5,6 +5,8 @@
 
 using eosio::key256;
 using eosio::time_point_sec;
+using eosio::asset;
+using eosio::name;
 
 using eosio::multi_index;
 using eosio::const_mem_fun;
@@ -26,7 +28,8 @@ public:
           activities(_self, _self),
           sponsors(_self, _self),
           npos(_self, _self),
-          categorities(_self, _self) {
+          categorities(_self, _self),
+          resources(_self, _self) {
     }
 
     // @abi action
@@ -230,6 +233,60 @@ public:
         }
     }
 
+    // @abi action
+    void resource(
+        account_name account,
+        string title,
+        uint8_t status,
+        uint64_t category,
+        string description,
+        string how_get,
+        string contacts,
+        asset price
+    ) {
+        print("bee_social::resource\n");
+
+        validate_title(title);
+        validate_description(description);
+
+        eosio_assert(how_get.size() > 0, "how_get can't be empty");
+        eosio_assert(how_get.size() < 4096, "how_get is too big");
+        eosio_assert(contacts.size() > 0, "Contacts can't be empty");
+        eosio_assert(contacts.size() < 4096, "Contacts is too big");
+
+        auto cit = categorities.find(category);
+        eosio_assert(cit != categorities.end(), "Category doesn't exists");
+        eosio_assert((*cit).enabled, "Category is disabled");
+
+        auto key = name{account}.to_string() + ":" + title;
+        auto idx = resources.template get_index<N(resource.keys)>();
+        auto it = find_key256<resource_t, &resource_t::key>(idx, key);
+
+        if (it == idx.end()) {
+            resources.emplace(_self, [&](auto& s) {
+                s.id = resources.available_primary_key();
+                s.account = account;
+                s.title = title;
+                s.key = key;
+                s.status = status;
+                s.category = category;
+                s.description = description;
+                s.how_get = how_get;
+                s.contacts = contacts;
+                s.price = price;
+            });
+        } else {
+            idx.modify(it, 0, [&](auto& s){
+                s.status = status;
+                s.category = category;
+                s.description = description;
+                s.how_get = how_get;
+                s.contacts = contacts;
+                s.price = price;
+            });
+        }
+    }
+
     static key256 string_to_key256(const std::string& src) {
         array<uint64_t, 4> v;
         v.fill(0ULL);
@@ -270,6 +327,14 @@ private:
 
     void validate_description(const string& description) const {
         eosio_assert(description.size() < 4096, "Description is too big");
+    }
+
+    void validate_asset(const asset& value) const {
+        static auto beesocial_symbol = eosio::string_to_symbol(4, "BEESOCIAL");
+
+        eosio_assert(value.symbol == beesocial_symbol, "Only BEESOCIAL token allowed");
+        eosio_assert(value.is_valid(), "Invalid asset");
+        eosio_assert(value.amount > 0, "Asset must have positive quantity");
     }
 
     //@abi table skills i64
@@ -429,11 +494,42 @@ private:
     };
 
     using categority_index = multi_index<
-    N(categorities), categority_t,
+        N(categorities), categority_t,
         indexed_by<N(categority.titles), const_mem_fun<categority_t, key256, &categority_t::by_title>>
     >;
 
     categority_index categorities;
+
+    //@abi table resources i64
+    struct resource_t {
+        uint64_t id;
+        account_name account;
+        string title;
+        string key;
+        uint8_t status;
+        uint64_t category;
+        string description;
+        string how_get;
+        string contacts;
+        asset price;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        key256 by_key() const {
+            return beesocial::string_to_key256(key);
+        }
+
+        EOSLIB_SERIALIZE(resource_t, (id)(account)(title)(status)(category)(description)(how_get)(contacts)(price));
+    };
+
+    using resource_index = multi_index<
+        N(resources), resource_t,
+        indexed_by<N(resource.keys), const_mem_fun<resource_t, key256, &resource_t::by_key>>
+    >;
+
+    resource_index resources;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category))
+EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource))
