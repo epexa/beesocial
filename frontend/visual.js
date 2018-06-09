@@ -20,12 +20,20 @@ let modalAuth = new Modal(document.getElementById('auth'));
 let editNpoModal = new Modal(document.getElementById('edit-npo-modal'));
 let editSponsorsModal = new Modal(document.getElementById('edit-sponsors-modal'));
 let modalSignin = new Modal(document.getElementById('signin-modal'));
+let modalReviewEmployee = new Modal(document.getElementById('review-employee'));
 let resourceItemSelected;
 
 let arr = document.querySelector('#projects').querySelectorAll('.btn');
 arr.forEach(function (item, i, arr) {
 	arr[i].addEventListener('click', function () {
 		projectModal.show(); // projects modals
+	});
+});
+
+arr = document.getElementById('encouraging-employees').querySelectorAll('.review');
+arr.forEach(function (item, i, arr) {
+	arr[i].addEventListener('click', function () {
+		modalReviewEmployee.show();
 	});
 });
 
@@ -91,6 +99,10 @@ document.getElementById('login').addEventListener('click', function () {
 });
 
 document.getElementById('signin').addEventListener('click', function () {
+	modalSignin.show();
+});
+
+document.getElementById('encouraging-employees').quer.addEventListener('click', function () {
 	modalSignin.show();
 });
 
