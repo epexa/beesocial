@@ -66,7 +66,7 @@ window.addEventListener('hashchange', function () {
 						$purchasedResourcesPage.style.display = 'none';
 						$projectsPage.style.display = 'none';
 						$resourcesPage.style.display = 'block';
-						getResources();
+						//getResources();
 					};
 					break;
 				case 'projects':

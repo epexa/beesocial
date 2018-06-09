@@ -5,6 +5,8 @@
 
 using eosio::key256;
 using eosio::time_point_sec;
+using eosio::asset;
+using eosio::name;
 
 using eosio::multi_index;
 using eosio::const_mem_fun;
@@ -16,6 +18,24 @@ using std::string;
 using std::vector;
 using std::array;
 using std::to_string;
+using std::set;
+
+#define BEESOCIAL_SYMBOL (eosio::string_to_symbol(4, "BEESOCIAL"))
+
+enum project_status {
+    project_created = 0,
+    project_started = 1,
+    project_canceled = 2,
+    project_complete = 3
+
+};
+
+enum request_status {
+    request_enabled = 0,
+    request_disabled = 1,
+    request_failed = 2,
+    request_complete = 3
+};
 
 class beesocial: public eosio::contract {
 public:
@@ -26,7 +46,10 @@ public:
           activities(_self, _self),
           sponsors(_self, _self),
           npos(_self, _self),
-          categorities(_self, _self) {
+          categorities(_self, _self),
+          resources(_self, _self),
+          projects(_self, _self),
+          requests(_self, _self) {
     }
 
     // @abi action
@@ -67,12 +90,7 @@ public:
         eosio_assert(full_name.size() > 0, "Full name can't be empty");
         eosio_assert(full_name.size() < 128, "Full name is too big");
         validate_location(location);
-
-        for (auto sit = worker_skills.begin(); sit != worker_skills.end(); ++sit) {
-            auto fit = skills.find(*sit);
-            eosio_assert(fit != skills.end(), "Skill doesn't exists");
-            eosio_assert(fit->enabled, "Skill is disabled");
-        }
+        validate_skills(worker_skills);
 
         auto idx = workers.template get_index<N(worker.accounts)>();
         auto it = idx.find(account);
@@ -90,8 +108,6 @@ public:
                 s.skills = worker_skills;
                 s.enabled = enabled;
             });
-
-            it = idx.find(account);
         } else {
             idx.modify(it, 0, [&](auto& s){
                 s.full_name = full_name;
@@ -230,6 +246,275 @@ public:
         }
     }
 
+    // @abi action
+    void resource(
+        account_name account,
+        string title,
+        uint8_t status,
+        uint64_t category,
+        string description,
+        string how_get,
+        string contacts,
+        asset price
+    ) {
+        print("bee_social::resource\n");
+
+        validate_title(title);
+        validate_description(description);
+
+        eosio_assert(how_get.size() > 0, "how_get can't be empty");
+        eosio_assert(how_get.size() < 4096, "how_get is too big");
+        eosio_assert(contacts.size() > 0, "Contacts can't be empty");
+        eosio_assert(contacts.size() < 4096, "Contacts is too big");
+
+        auto cit = categorities.find(category);
+        eosio_assert(cit != categorities.end(), "Category doesn't exists");
+        eosio_assert((*cit).enabled, "Category is disabled");
+
+        auto key = name{account}.to_string() + ":" + title;
+        auto idx = resources.template get_index<N(resource.keys)>();
+        auto it = find_key256_fun<resource_t, &resource_t::get_key>(idx, key);
+
+        if (it == idx.end()) {
+            resources.emplace(_self, [&](auto& s) {
+                s.id = resources.available_primary_key();
+                s.account = account;
+                s.title = title;
+                s.status = status;
+                s.category = category;
+                s.description = description;
+                s.how_get = how_get;
+                s.contacts = contacts;
+                s.price = price;
+            });
+        } else {
+            idx.modify(it, 0, [&](auto& s){
+                s.status = status;
+                s.category = category;
+                s.description = description;
+                s.how_get = how_get;
+                s.contacts = contacts;
+                s.price = price;
+            });
+        }
+    }
+
+    // @abi action
+    void project(
+        uint64_t npo,
+        string title,
+        string description,
+        vector<uint64_t> skills,
+        time_point_sec created,
+        time_point_sec date_from,
+        time_point_sec date_to,
+        asset price,
+        uint32_t required
+    ) {
+        print("bee_social::project\n");
+
+        validate_title(title);
+        validate_description(description);
+        validate_skills(skills);
+
+        eosio_assert(required > 0, "Required workers should be more than zero");
+
+        auto nit = npos.find(npo);
+        eosio_assert(nit != npos.end(), "NPO doesn't exists");
+        eosio_assert((*nit).enabled, "NPO is disabled");
+
+        auto key = to_string(npo) + ":" + title;
+        auto idx = projects.template get_index<N(project.keys)>();
+        auto it = find_key256_fun<project_t, &project_t::get_key>(idx, key);
+
+        if (it == idx.end()) {
+            projects.emplace(_self, [&](auto& s) {
+                s.id = projects.available_primary_key();
+                s.npo = npo;
+                s.title = title;
+                s.description = description;
+                s.skills = skills;
+                s.created = created;
+                s.date_from = date_from;
+                s.date_to = date_to;
+                s.status = project_created;
+                s.price = price;
+                s.required = required;
+                s.hired = 0;
+            });
+        } else {
+            eosio_assert(it->status == project_created, "Project can't be modified after started/canceled/complete.");
+            eosio_assert(it->hired <= required, "Project has hired more workers, than required");
+
+            idx.modify(it, 0, [&](auto& s){
+                s.description = description;
+                s.skills = skills;
+                s.created = created;
+                s.date_from = date_from;
+                s.date_to = date_to;
+                s.price = price;
+                s.required = required;
+            });
+        }
+    }
+
+    // @abi action
+    void request(const uint64_t project, const uint64_t worker, const uint8_t status) {
+        print("bee_social::request\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_started, "Project isn't started");
+
+        auto wit = workers.find(worker);
+        eosio_assert(wit != workers.end(), "Worker doesn't exist");
+        eosio_assert((*wit).enabled, "Worker is disabled");
+
+        eosio_assert(status == request_enabled || status == request_disabled, "Invalid status");
+
+        auto key = (static_cast<uint128_t>(project) << 64) + worker;
+        auto idx = requests.template get_index<N(request.keys)>();
+        auto it = idx.find(key);
+
+        if (it == idx.end()) {
+            set<uint64_t> skills((*pit).skills.begin(), (*pit).skills.end());
+            bool has_skill = false;
+
+            for (auto sit = (*wit).skills.begin(); !has_skill && sit != (*wit).skills.end(); ++sit) {
+                has_skill = skills.count(*sit);
+            }
+
+            eosio_assert(has_skill, "Worker doesn't have required skills");
+            eosio_assert(
+                status == request_disabled || (*pit).required > (*pit).hired,
+                "Project has hired the required number of workers");
+
+            requests.emplace(_self, [&](auto& s) {
+                s.id = requests.available_primary_key();
+                s.project = project;
+                s.worker = worker;
+                s.status = status;
+                s.created = time_point_sec(now());
+                s.reward = asset(0, BEESOCIAL_SYMBOL);
+            });
+
+            if (status == request_enabled) {
+                projects.modify(pit, 0, [&](auto& p){
+                    p.hired++;
+                });
+            }
+        } else {
+            eosio_assert(it->status != request_failed, "Request is disabled by NPO");
+
+            if (it->status == request_enabled && status == request_disabled) {
+                projects.modify(pit, 0, [&](auto& p){
+                    p.hired--;
+                });
+            } else if (it->status == request_disabled && status == request_enabled) {
+                eosio_assert((*pit).hired < (*pit).required, "Project has hired the required number of workers");
+                projects.modify(pit, 0, [&](auto& p){
+                    p.hired++;
+                });
+            }
+
+            idx.modify(it, 0, [&](auto& s){
+                s.status = status;
+            });
+        }
+    }
+
+    // @abi action
+    void deposit(const uint64_t project) {
+        print("bee_social::fail\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_created, "Project can't start after started/canceled/complete.");
+
+        // TRANSFER from npo
+
+        projects.modify(pit, 0, [&](auto& p){
+           p.status = project_started;
+        });
+    }
+
+    // @abi action
+    void fail(const uint64_t project, const uint64_t worker) {
+        print("bee_social::fail\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_started, "Project isn't started");
+
+        auto wit = workers.find(worker);
+        eosio_assert(wit != workers.end(), "Worker doesn't exist");
+
+        auto key = (static_cast<uint128_t>(project) << 64) + worker;
+        auto idx = requests.template get_index<N(request.keys)>();
+        auto it = idx.find(key);
+
+        eosio_assert(it != idx.end(), "Request doesn't exist");
+
+        idx.modify(it, 0, [&](auto& r){
+            r.status = request_failed;
+            r.done = time_point_sec(now());
+        });
+    }
+
+    // @abi action
+    void cancel(const uint64_t project) {
+        print("bee_social::cancel\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_created, "Project can't cancel after started/canceled/complete.");
+
+        projects.modify(pit, 0, [&](auto& p) {
+            p.status = project_canceled;
+            p.done = time_point_sec(now());
+        });
+    }
+
+    // @abi action
+    void complete(const uint64_t project) {
+        print("bee_social::complete\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_started, "Project isn't started");
+
+        auto key = (static_cast<uint128_t>(project) << 64);
+        auto idx = requests.template get_index<N(request.keys)>();
+        auto it = idx.lower_bound(key);
+        uint32_t cnt = 0;
+        time_point_sec t(now());
+
+        for (; it != idx.end() && (*it).project == project; ++it) {
+            if ((*it).status != request_enabled) {
+                continue;
+            }
+
+            auto wit = workers.find((*it).worker);
+            if ((*wit).enabled) {
+                idx.modify(it, 0, [&](auto& s) {
+                    s.done = t;
+                    s.status = request_complete;
+                    s.reward = (*pit).price;
+                });
+                // TRANSFER to worker
+                cnt++;
+            }
+        }
+
+        if (cnt != (*pit).required) {
+            projects.modify(pit, 0, [&](auto& p) {
+                p.status = project_complete;
+                p.done = t;
+            });
+            // TRANSFER to npo
+        }
+    }
+
     static key256 string_to_key256(const std::string& src) {
         array<uint64_t, 4> v;
         v.fill(0ULL);
@@ -238,6 +523,27 @@ public:
     }
 
 private:
+    template <class Class, string (Class::* PtrToMemberFun)() const, typename Index>
+    typename Index::const_iterator find_key256_fun(const Index& idx, const string& value) const {
+        auto et = idx.end();
+        typename Index::secondary_extractor_type key_extractor;
+        auto key = string_to_key256(value);
+        auto it = idx.find(key);
+        for (; et != it && key_extractor(*it) == key; ++it) {
+            if (value == (((*it).*PtrToMemberFun)())) {
+                return it;
+            }
+        }
+        return et;
+    }
+
+    template <class Class, string (Class::* PtrToMemberFun)() const, typename Index>
+    typename Index::const_iterator has_key256_fun(const Index& idx, const string& value) const {
+        auto it = find_key256_fun<Class, PtrToMemberFun>(idx, value);
+        return it != idx.end();
+    }
+
+
     template <class Class, string Class::* PtrToMember, typename Index>
     typename Index::const_iterator find_key256(const Index& idx, const string& value) const {
         auto et = idx.end();
@@ -258,6 +564,16 @@ private:
         return it != idx.end();
     }
 
+    void validate_skills(const vector<uint64_t>& check_skills) const {
+        eosio_assert(!check_skills.empty(), "Skills can't be empty");
+
+        for (auto sit = check_skills.begin(); sit != check_skills.end(); ++sit) {
+            auto fit = skills.find(*sit);
+            eosio_assert(fit != skills.end(), "Skill doesn't exists");
+            eosio_assert(fit->enabled, "Skill is disabled");
+        }
+    }
+
     void validate_title(const string& title) const {
         eosio_assert(title.size() > 0, "Title can't be empty");
         eosio_assert(title.size() < 128, "Title is too big");
@@ -270,6 +586,12 @@ private:
 
     void validate_description(const string& description) const {
         eosio_assert(description.size() < 4096, "Description is too big");
+    }
+
+    void validate_asset(const asset& value) const {
+        eosio_assert(value.symbol == BEESOCIAL_SYMBOL, "Only BEESOCIAL token allowed");
+        eosio_assert(value.is_valid(), "Invalid asset");
+        eosio_assert(value.amount > 0, "Asset must have positive quantity");
     }
 
     //@abi table skills i64
@@ -429,11 +751,111 @@ private:
     };
 
     using categority_index = multi_index<
-    N(categorities), categority_t,
+        N(categorities), categority_t,
         indexed_by<N(categority.titles), const_mem_fun<categority_t, key256, &categority_t::by_title>>
     >;
 
     categority_index categorities;
+
+    //@abi table resources i64
+    struct resource_t {
+        uint64_t id;
+        account_name account;
+        string title;
+        uint8_t status;
+        uint64_t category;
+        string description;
+        string how_get;
+        string contacts;
+        asset price;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        string get_key() const {
+            return name{account}.to_string() + ":" + title;
+        }
+
+        key256 by_key() const {
+            return beesocial::string_to_key256(get_key());
+        }
+
+        EOSLIB_SERIALIZE(resource_t, (id)(account)(title)(status)(category)(description)(how_get)(contacts)(price));
+    };
+
+    using resource_index = multi_index<
+        N(resources), resource_t,
+        indexed_by<N(resource.keys), const_mem_fun<resource_t, key256, &resource_t::by_key>>
+    >;
+
+    resource_index resources;
+
+    //@abi table projects i64
+    struct project_t {
+        uint64_t id;
+        uint64_t npo;
+        string title;
+        string description;
+        vector<uint64_t> skills;
+        time_point_sec created;
+        time_point_sec done;
+        time_point_sec date_from;
+        time_point_sec date_to;
+        uint8_t status;
+        asset price;
+        uint32_t required;
+        uint32_t hired;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        string get_key() const {
+            return to_string(npo) + ":" + title;
+        }
+
+        key256 by_key() const {
+            return beesocial::string_to_key256(get_key());
+        }
+
+        EOSLIB_SERIALIZE(project_t, (id)(npo)(title)(description)(skills)(created)(date_from)(date_to)(status)(price)(required));
+    };
+
+    using project_index = multi_index<
+        N(projects), project_t,
+        indexed_by<N(project.keys), const_mem_fun<project_t, key256, &project_t::by_key>>
+    >;
+
+    project_index projects;
+
+    //@abi table requests i64
+    struct request_t {
+        uint64_t id;
+        uint64_t project;
+        uint64_t worker;
+        time_point_sec created;
+        time_point_sec done;
+        int8_t status;
+        asset reward;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        uint128_t by_key() const {
+            return (static_cast<uint128_t>(project) << 64) + worker;
+        }
+
+        EOSLIB_SERIALIZE(request_t, (id)(project)(worker)(created)(status)(reward));
+    };
+
+    using request_index = multi_index<
+        N(requests), request_t,
+        indexed_by<N(request.keys), const_mem_fun<request_t, uint128_t, &request_t::by_key>>
+    >;
+
+    request_index requests;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category))
+EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete))
