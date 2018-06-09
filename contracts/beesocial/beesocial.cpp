@@ -65,10 +65,10 @@ public:
         eosio_assert(location.size() > 0, "Location can't be empty");
         eosio_assert(location.size() < 128, "Location is too big");
 
-        for (auto sitr = worker_skills.begin(); sitr != worker_skills.end(); ++sitr) {
-            auto fitr = skills.find(*sitr);
-            eosio_assert(fitr != skills.end(), "Skill doesn't exists");
-            eosio_assert(fitr->enabled, "Skill is disabled");
+        for (auto sit = worker_skills.begin(); sit != worker_skills.end(); ++sit) {
+            auto fit = skills.find(*sit);
+            eosio_assert(fit != skills.end(), "Skill doesn't exists");
+            eosio_assert(fit->enabled, "Skill is disabled");
         }
 
         auto idx = workers.template get_index<N(worker.names)>();
@@ -81,6 +81,7 @@ public:
                 s.full_name = full_name;
                 s.location = location;
                 s.birth_date = birth_date;
+                s.skills = worker_skills;
                 s.enabled = enabled;
             });
 
@@ -90,12 +91,10 @@ public:
                 s.full_name = full_name;
                 s.location = location;
                 s.birth_date = birth_date;
+                s.skills = worker_skills;
                 s.enabled = enabled;
             });
         }
-
-//        for (auto sitr = worker_skills.begin(); sitr != worker_skills.end(); ++sitr) {
-//        }
     }
 
     static key256 string_to_key256(const std::string& src) {
@@ -157,6 +156,7 @@ private:
         string full_name;
         string location;
         time_point_sec birth_date;
+        vector<uint64_t> skills;
         bool enabled;
 
         uint64_t primary_key() const {
@@ -167,7 +167,7 @@ private:
             return account;
         }
 
-        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(birth_date)(enabled));
+        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(birth_date)(skills)(enabled));
     };
 
     using worker_index = multi_index<
@@ -177,11 +177,6 @@ private:
 
     worker_index workers;
 
-    //abi table
-//    struct worker_skill_t {
-//        uint64_t worker;
-//        uint64_t skill;
-//    };
 };
 
 EOSIO_ABI(beesocial, (skill)(worker))
