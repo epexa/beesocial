@@ -1,0 +1,22 @@
+{
+  "name": "beesocial_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/epexa/beesocial.git"
+  },
+  "author": "epexa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/epexa/beesocial/issues"
+  },
+  "homepage": "https://github.com/epexa/beesocial#readme",
+  "dependencies": {
+    "eosjs": "^14.1.1"
+  }
+}
