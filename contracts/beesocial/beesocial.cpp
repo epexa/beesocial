@@ -402,6 +402,21 @@ public:
     }
 
     // @abi action
+    void deposit(const uint64_t project) {
+        print("bee_social::fail\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_created, "Project status is incorrect");
+
+        // TRANSFER from npo
+
+        projects.modify(pit, 0, [&](auto& p){
+           p.status = project_started;
+        });
+    }
+
+    // @abi action
     void fail(const uint64_t project, const uint64_t worker) {
         print("bee_social::fail\n");
 
@@ -820,4 +835,4 @@ private:
     request_index requests;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(cancel)(fail)(complete))
+EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete))
