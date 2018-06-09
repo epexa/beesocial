@@ -52,6 +52,7 @@ footer {
 }
 
 #accept-workers-page {
+	display: none;
 	width: 600px;
 }
 
