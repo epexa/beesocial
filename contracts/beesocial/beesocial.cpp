@@ -15,29 +15,87 @@ using eosio::print;
 using std::string;
 using std::vector;
 using std::array;
+using std::to_string;
 
 class beesocial: public eosio::contract {
 public:
     beesocial(account_name self)
         : eosio::contract(self),
           skills(_self, _self),
-          volounters(_self, _self) {
+          workers(_self, _self) {
     }
 
     //@abi action
-    void skill(string name) {
+    void skill(const string& title, bool enabled) {
         print("bee_social::skill\n");
+
+        eosio_assert(title.size() > 0, "Title can't be empty");
+        eosio_assert(title.size() < 512, "Title is too big");
+
+        auto idx = skills.template get_index<N(skill.titles)>();
+        auto it = find_key256<skill_t, &skill_t::title>(idx, title);
+
+        if (it == idx.end()) {
+            skills.emplace(_self, [&](auto& s) {
+                s.id = skills.available_primary_key();
+                s.title = title;
+                s.enabled = enabled;
+            });
+        } else {
+            idx.modify(it, 0, [&](auto& s){
+                s.title = title;
+                s.enabled = enabled;
+            });
+        }
     }
 
     //@abi action
-    void volounter(
+    void worker(
         account_name account,
-        string full_name,
-        string location,
+        const string& full_name,
+        const string& location,
         time_point_sec birth_date,
-        vector<uint64_t> skills
+        vector<uint64_t> worker_skills,
+        bool enabled
     ) {
-        print("bee_social::volounter\n");
+        print("bee_social::worker\n");
+
+        eosio_assert(full_name.size() > 0, "Full name can't be empty");
+        eosio_assert(full_name.size() < 128, "Full name is too big");
+        eosio_assert(location.size() > 0, "Location can't be empty");
+        eosio_assert(location.size() < 128, "Location is too big");
+
+        for (auto sitr = worker_skills.begin(); sitr != worker_skills.end(); ++sitr) {
+            auto fitr = skills.find(*sitr);
+            eosio_assert(fitr != skills.end(), "Skill doesn't exists");
+            eosio_assert(fitr->enabled, "Skill is disabled");
+        }
+
+        auto idx = workers.template get_index<N(worker.names)>();
+        auto it = idx.find(account);
+
+        if (it == idx.end()) {
+            workers.emplace(_self, [&](auto& s) {
+                s.id = workers.available_primary_key();
+                s.account = account;
+                s.full_name = full_name;
+                s.location = location;
+                s.birth_date = birth_date;
+                s.enabled = enabled;
+            });
+
+            it = idx.find(account);
+        } else {
+            idx.modify(it, 0, [&](auto& s){
+                s.full_name = full_name;
+                s.location = location;
+                s.birth_date = birth_date;
+                s.enabled = enabled;
+            });
+        }
+
+//        for (auto sitr = worker_skills.begin(); sitr != worker_skills.end(); ++sitr) {
+//        }
     }
 
     static key256 string_to_key256(const std::string& src) {
@@ -48,10 +106,31 @@ public:
     }
 
 private:
+    template <class Class, string Class::* PtrToMember, typename Index>
+    typename Index::const_iterator find_key256(const Index& idx, const string& value) const {
+        auto et = idx.end();
+        typename Index::secondary_extractor_type key_extractor;
+        auto key = string_to_key256(value);
+        auto it = idx.find(key);
+        for (; et != it && key_extractor(*it) == key; ++it) {
+            if (value == ((*it).*PtrToMember)) {
+                return it;
+            }
+        }
+        return et;
+    }
+
+    template <class Class, string Class::* PtrToMember, typename Index>
+    typename Index::const_iterator has_key256(const Index& idx, const string& value) const {
+        auto it = find_key256<Class, PtrToMember>(idx, value);
+        return it != idx.end();
+    }
+
     //@abi table skills i64
     struct skill_t {
         uint64_t id;
         string title;
+        bool enabled;
 
         uint64_t primary_key() const {
             return id;
@@ -61,46 +140,48 @@ private:
             return beesocial::string_to_key256(title);
         }
 
-        EOSLIB_SERIALIZE(skill_t, (id)(title));
+        EOSLIB_SERIALIZE(skill_t, (id)(title)(enabled));
     };
 
     using skill_index = multi_index<
         N(skills), skill_t,
-        indexed_by<N(skill.names), const_mem_fun<skill_t, key256, &skill_t::by_title>>
+        indexed_by<N(skill.titles), const_mem_fun<skill_t, key256, &skill_t::by_title>>
     >;
 
     skill_index skills;
 
-    //@abi table volounters i64
-    struct volounter_t {
+    //@abi table workers i64
+    struct worker_t {
         uint64_t id;
         account_name account;
-        string name;
+        string full_name;
         string location;
         time_point_sec birth_date;
+        bool enabled;
 
         uint64_t primary_key() const {
             return id;
         }
 
-        key256 by_name() const {
-            return beesocial::string_to_key256(name);
+        uint64_t by_account() const {
+            return account;
         }
 
-        key256 by_location() const {
-            return beesocial::string_to_key256(location);
-        }
-
-        EOSLIB_SERIALIZE(volounter_t, (id)(account)(name)(location)(birth_date));
+        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(birth_date)(enabled));
     };
 
-    using volounter_index = multi_index<
-        N(volounters), volounter_t,
-        indexed_by<N(volounter.names), const_mem_fun<volounter_t, key256, &volounter_t::by_name>>,
-        indexed_by<N(volounter.locations), const_mem_fun<volounter_t, key256, &volounter_t::by_location>>
+    using worker_index = multi_index<
+        N(workers), worker_t,
+        indexed_by<N(worker.names), const_mem_fun<worker_t, account_name, &worker_t::by_account>>
     >;
 
-    volounter_index volounters;
+    worker_index workers;
+
+    //abi table
+//    struct worker_skill_t {
+//        uint64_t worker;
+//        uint64_t skill;
+//    };
 };
 
-EOSIO_ABI(beesocial, (skill)(volounter))
+EOSIO_ABI(beesocial, (skill)(worker))
