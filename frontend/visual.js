@@ -33,14 +33,24 @@ window.addEventListener('hashchange', function() {
 		if (params[0]) {
 			switch (params[0]) {
 				case 'resources': {
-
+					$mainPage.style.display = 'none';
+					$purchasedResourcesPage.style.display = 'none';
+					$projectsPage.style.display = 'none';
+					$resourcesPage.style.display = 'block';
+					getResources();
 				}; break;
 				case 'projects': {
 					$mainPage.style.display = 'none';
+					$purchasedResourcesPage.style.display = 'none';
+					$resourcesPage.style.display = 'none';
 					$projectsPage.style.display = 'block';
 				}; break;
 				case 'purchased-resources': {
-
+					$mainPage.style.display = 'none';
+					$resourcesPage.style.display = 'none';
+					$projectsPage.style.display = 'none';
+					$purchasedResourcesPage.style.display = 'block';
+					showPurchasedResources();
 				}; break;
 			}
 		}
@@ -49,4 +59,20 @@ window.addEventListener('hashchange', function() {
 		$purchasedResourcesPage.style.display = 'none';
 		$mainPage.style.display = 'block';
 	}
+});
+
+document.querySelector('#avatar').addEventListener("focusin", function () {
+	document.querySelector('#dropdown-avatar').classList.add('show');
+});
+
+document.querySelector('#dropdown-avatar').addEventListener('click', function () {
+	document.querySelector('#dropdown-avatar').classList.remove('show');
+});
+
+document.getElementById('create-project-btn').addEventListener('click', function() {
+	createProjectModal.show();
+});
+
+document.getElementById('create-resource-btn').addEventListener('click', function() {
+	createResourceModal.show();
 });
