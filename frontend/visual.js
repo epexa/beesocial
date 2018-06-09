@@ -17,6 +17,7 @@ let $createProjectModal = document.getElementById('create-project-modal');
 let createProjectModal = new Modal($createProjectModal);
 let $resourceItem = document.querySelector('#resource-item');
 let modalAuth = new Modal(document.getElementById('auth'));
+let modalSignin = new Modal(document.getElementById('signin-modal'));
 let resourceItemSelected;
 
 let arr = document.querySelector('#projects').querySelectorAll('.btn');
@@ -81,6 +82,14 @@ document.getElementById('create-project-btn').addEventListener('click', function
 
 document.getElementById('create-resource-btn').addEventListener('click', function () {
 	createResourceModal.show();
+});
+
+document.getElementById('login').addEventListener('click', function () {
+	modalAuth.show();
+});
+
+document.getElementById('signin').addEventListener('click', function () {
+	modalSignin.show();
 });
 
 window.dispatchEvent(new CustomEvent('hashchange'));

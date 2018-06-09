@@ -100,7 +100,7 @@
 					<label class="create-project">Tags</label>
 					<input type="text" class="form-control">
 					<br>
-					<button type="button" class="btn btn-success" id="create-project-btn">Create project</button>
+					<button type="button" class="btn btn-success" id="create-project-btn" style="margin-left: 1rem;">Create project</button>
 				</div>
 				<label id="noprojects">There are no projects found</label>
 				<br>
@@ -269,40 +269,77 @@
 			</div>
 		</div>
 		<div class="modal" tabindex="-1" role="dialog" id="auth" aria-hidden="false">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">To continue, you need to log in!</h5>
-					<button type="button" id="change-node-close" class="close" data-dismiss="modal" aria-label="Close">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5>Please enter your login and password</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">×</span>
 						</button>
-				</div>
-				<div class="modal-body">
-					<h5>Please enter your login and password</h5>
-					<form id="form-login-pass" class="d-flex flex-column">
-						<div class="form-group">
-							<label for="input-user">Username</label>
-							<div class="input-group">
-								<div class="input-group-prepend">
-									<div class="input-group-text">@</div>
+					</div>
+					<div class="modal-body">
+						<br>
+						<form id="form-login-pass" class="d-flex flex-column">
+							<div class="form-group">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<div class="input-group-text">@</div>
+									</div>
+									<input type="text" class="form-control" id="input-user" placeholder="login" required="">
 								</div>
-								<input type="text" class="form-control" id="input-user" placeholder="Username" required="">
 							</div>
-						</div>
-						<div class="form-group">
-							<label for="input-pass">Password</label>
-							<input id="input-pass" type="password" class="form-control" placeholder="Master password" aria-label="Password" aria-describedby="Password" required="">
-						</div>
-						<div class="form-group form-check align-self-center">
-							<input id="logged" class="form-check-input" type="checkbox" value="">
-							<label class="form-check-label">remember me</label>
-						</div>
-						<button type="submit" id="log-pass-log" class="btn btn-success align-self-center"><span class="icon-enter"></span> Login</button>
-					</form>
+							<div class="form-group">
+								<input id="input-pass" type="password" class="form-control" placeholder="password" aria-label="Password" aria-describedby="Password" required="">
+							</div>
+							<div class="form-group form-check align-self-center">
+								<input id="logged" class="form-check-input" type="checkbox" value="">
+								<label class="form-check-label">remember me</label>
+							</div>
+							<button type="submit" id="log-pass-log" class="btn btn-success align-self-center"><span class="icon-enter"></span> Login</button>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+		<div class="modal" tabindex="-1" role="dialog" id="signin-modal" aria-hidden="false">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5>Please enter your login and password</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<br>
+						<form id="form-login-pass" class="d-flex flex-column">
+							<div class="form-group">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<div class="input-group-text">@</div>
+									</div>
+									<input type="text" class="form-control" id="input-user" placeholder="login" required="">
+								</div>
+							</div>
+							<div class="form-group">
+								<input id="input-pass" type="password" class="form-control" placeholder="password" aria-label="Password" aria-describedby="Password" required="">
+							</div>
+								<label for="sel1">Select your gender:</label>
+								<select class="form-control" id="sel1">
+									<option>female</option>
+									<option>male</option>
+									<option>none</option>
+								</select><br>
+							<div class="form-group form-check align-self-center">
+								<input id="logged" class="form-check-input" type="checkbox" value="">
+								<label class="form-check-label">remember me</label>
+							</div>
+							<button type="submit" id="log-pass-log" class="btn btn-success align-self-center"><span class="icon-enter"></span> Login</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 	</article>
 	<div class="lding">
 		<div class="lds-css ng-scope">
@@ -323,7 +360,7 @@
 	<script src="https://thednp.github.io/bootstrap.native/dist/bootstrap-native-v4.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.13.1/dist/sweetalert2.all.min.js"></script>
 	<script src="eos.js"></script>
-	<script src="app.js"></script>
+	<!--<script src="app.js"></script>-->
 	<script src="visual.js"></script>
 </body>
 
