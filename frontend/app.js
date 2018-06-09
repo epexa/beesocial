@@ -1,7 +1,8 @@
 let options = {
-	httpEndpoint: 'http://192.168.43.240:8888',
+	//httpEndpoint: 'http://192.168.43.240:8888',
+	httpEndpoint: 'http://91.201.41.253:8888',
 	debug: true,
-	keyProvider: '5JwLcd2FtEKrUxKH7GuVKzaYiYtyyp5MirqXLvi9s2wuLbq7kK1', // PW5KATTYpBNPdj4BAqGoBGBntQGtdyzdY3xn45TCZqso1cBtGn3k5
+	keyProvider: '5KSrt18UsHeDEr7CKVnDEHCEEYoRyAvpd4PowHS1DYT1yZCLFHV',
 	//authorization: 'alice@active',
 	sign: true,
 	//broadcast: true
@@ -14,7 +15,7 @@ eos.getInfo((err, info) => {
 
 eos.getCode({ account_name: 'beesocial' }, (err, res) => {
 	if ( ! err) {
-		console.log(res.abi);
+		console.log('smartcontract', res.abi);
 	}
 	else console.error(err);
 });
@@ -32,36 +33,43 @@ let $resourcesPage = document.querySelector('#resources-page');
 let $resources = $resourcesPage.querySelector('#resources');
 let $resourceItem = document.querySelector('#resource-item'); */
 
-eos.getTableRows({
-	scope: 'beesocial',
-	code: 'beesocial',
-	table: 'workers',
-	json: true
-}, (err, res) => {
-	if ( ! err) {
-		res.rows.forEach(item => {
-			console.log('item', item);
-			
-			/* let $newItem = $resourceItem.cloneNode(true);
-			$newItem.querySelector('.card-title').innerHTML = item.title;
-			$newItem.querySelector('.card-text').innerHTML = item.description;
-			$newItem.setAttribute('data-id', item.id);
-			$newItem.querySelector('button').addEventListener('click', () => {
-				resourceItemSelected = item;
-				$resourceModal.querySelector('#resource-title').innerHTML = item.title;
-				$resourceModal.querySelector('#resource-description').innerHTML = item.description;
-				$resourceModal.querySelector('#resource-how-get').innerHTML = item.howget;
-				$resourceModal.querySelector('#resource-contacts').innerHTML = item.contacts;
-				$resourceModal.querySelector('#resource-price').innerHTML = item.price;
-				resourceModal.show();
+let getResources = () => {
+	
+};
+
+let getWorkersTable = () => {
+	eos.getTableRows({
+		scope: 'beesocial',
+		code: 'beesocial',
+		table: 'workers',
+		json: true
+	}, (err, res) => {
+		if ( ! err) {
+			res.rows.forEach(item => {
+				console.log('item', item);
+				
+				/* let $newItem = $resourceItem.cloneNode(true);
+				$newItem.querySelector('.card-title').innerHTML = item.title;
+				$newItem.querySelector('.card-text').innerHTML = item.description;
+				$newItem.setAttribute('data-id', item.id);
+				$newItem.querySelector('button').addEventListener('click', () => {
+					resourceItemSelected = item;
+					$resourceModal.querySelector('#resource-title').innerHTML = item.title;
+					$resourceModal.querySelector('#resource-description').innerHTML = item.description;
+					$resourceModal.querySelector('#resource-how-get').innerHTML = item.howget;
+					$resourceModal.querySelector('#resource-contacts').innerHTML = item.contacts;
+					$resourceModal.querySelector('#resource-price').innerHTML = item.price;
+					resourceModal.show();
+				});
+				$newItem.style.display = 'block';
+				$resources.appendChild($newItem); */
+				
 			});
-			$newItem.style.display = 'block';
-			$resources.appendChild($newItem); */
-			
-		});
-	}
-	else console.error(err);
-});
+		}
+		else console.error(err);
+	});
+};
+getWorkersTable();
 
 let $login = document.getElementById('login');
 let $logout = document.getElementById('logout');

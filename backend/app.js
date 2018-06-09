@@ -3,7 +3,7 @@ const Eos = require('eosjs');
 let options = {
 	httpEndpoint: 'http://192.168.43.240:8888',
 	debug: false,
-	keyProvider: '5JwLcd2FtEKrUxKH7GuVKzaYiYtyyp5MirqXLvi9s2wuLbq7kK1', // PW5KATTYpBNPdj4BAqGoBGBntQGtdyzdY3xn45TCZqso1cBtGn3k5
+	keyProvider: '5KSrt18UsHeDEr7CKVnDEHCEEYoRyAvpd4PowHS1DYT1yZCLFHV',
 	//authorization: 'alice@active',
 	sign: true,
 	//broadcast: true
