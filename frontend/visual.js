@@ -17,6 +17,8 @@ let $createProjectModal = document.getElementById('create-project-modal');
 let createProjectModal = new Modal($createProjectModal);
 let $resourceItem = document.querySelector('#resource-item');
 let modalAuth = new Modal(document.getElementById('auth'));
+let editNpoModal = new Modal(document.getElementById('edit-npo-modal'));
+let editSponsorsModal = new Modal(document.getElementById('edit-sponsors-modal'));
 let modalSignin = new Modal(document.getElementById('signin-modal'));
 let resourceItemSelected;
 

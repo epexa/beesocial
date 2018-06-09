@@ -47,6 +47,15 @@ footer {
 	text-align: center;
 }
 
+.list-group-item {
+	display: inline-flex;
+}
+
+#accept-workers-page {
+	display: none;
+	width: 80%;
+}
+
 .lding {
     background: black;
     position: fixed;
