@@ -29,7 +29,8 @@ public:
           sponsors(_self, _self),
           npos(_self, _self),
           categorities(_self, _self),
-          resources(_self, _self) {
+          resources(_self, _self),
+          projects(_self, _self) {
     }
 
     // @abi action
@@ -70,12 +71,7 @@ public:
         eosio_assert(full_name.size() > 0, "Full name can't be empty");
         eosio_assert(full_name.size() < 128, "Full name is too big");
         validate_location(location);
-
-        for (auto sit = worker_skills.begin(); sit != worker_skills.end(); ++sit) {
-            auto fit = skills.find(*sit);
-            eosio_assert(fit != skills.end(), "Skill doesn't exists");
-            eosio_assert(fit->enabled, "Skill is disabled");
-        }
+        validate_skills(worker_skills);
 
         auto idx = workers.template get_index<N(worker.accounts)>();
         auto it = idx.find(account);
@@ -93,8 +89,6 @@ public:
                 s.skills = worker_skills;
                 s.enabled = enabled;
             });
-
-            it = idx.find(account);
         } else {
             idx.modify(it, 0, [&](auto& s){
                 s.full_name = full_name;
@@ -260,14 +254,13 @@ public:
 
         auto key = name{account}.to_string() + ":" + title;
         auto idx = resources.template get_index<N(resource.keys)>();
-        auto it = find_key256<resource_t, &resource_t::key>(idx, key);
+        auto it = find_key256_fun<resource_t, &resource_t::get_key>(idx, key);
 
         if (it == idx.end()) {
             resources.emplace(_self, [&](auto& s) {
                 s.id = resources.available_primary_key();
                 s.account = account;
                 s.title = title;
-                s.key = key;
                 s.status = status;
                 s.category = category;
                 s.description = description;
@@ -287,6 +280,54 @@ public:
         }
     }
 
+    // @abi action
+    void project(
+        uint64_t npo,
+        string title,
+        string description,
+        vector<uint64_t> skills,
+        time_point_sec created,
+        time_point_sec date_from,
+        time_point_sec date_to,
+        uint8_t status,
+        asset price
+    ) {
+        print("bee_social::project\n");
+
+        validate_title(title);
+        validate_description(description);
+        validate_skills(skills);
+
+        auto key = to_string(npo) + ":" + title;
+        auto idx = projects.template get_index<N(project.keys)>();
+        auto it = find_key256_fun<project_t, &project_t::get_key>(idx, key);
+
+        if (it == idx.end()) {
+            projects.emplace(_self, [&](auto& s) {
+                s.id = projects.available_primary_key();
+                s.npo = npo;
+                s.title = title;
+                s.description = description;
+                s.skills = skills;
+                s.created = created;
+                s.date_from = date_from;
+                s.date_to = date_to;
+                s.status = status;
+                s.price = price;
+            });
+        } else {
+            idx.modify(it, 0, [&](auto& s){
+                s.description = description;
+                s.skills = skills;
+                s.created = created;
+                s.date_from = date_from;
+                s.date_to = date_to;
+                s.status = status;
+                s.price = price;
+            });
+        }
+    }
+
     static key256 string_to_key256(const std::string& src) {
         array<uint64_t, 4> v;
         v.fill(0ULL);
@@ -295,6 +336,27 @@ public:
     }
 
 private:
+    template <class Class, string (Class::* PtrToMemberFun)() const, typename Index>
+    typename Index::const_iterator find_key256_fun(const Index& idx, const string& value) const {
+        auto et = idx.end();
+        typename Index::secondary_extractor_type key_extractor;
+        auto key = string_to_key256(value);
+        auto it = idx.find(key);
+        for (; et != it && key_extractor(*it) == key; ++it) {
+            if (value == (((*it).*PtrToMemberFun)())) {
+                return it;
+            }
+        }
+        return et;
+    }
+
+    template <class Class, string (Class::* PtrToMemberFun)() const, typename Index>
+    typename Index::const_iterator has_key256_fun(const Index& idx, const string& value) const {
+        auto it = find_key256_fun<Class, PtrToMemberFun>(idx, value);
+        return it != idx.end();
+    }
+
+
     template <class Class, string Class::* PtrToMember, typename Index>
     typename Index::const_iterator find_key256(const Index& idx, const string& value) const {
         auto et = idx.end();
@@ -313,6 +375,14 @@ private:
     typename Index::const_iterator has_key256(const Index& idx, const string& value) const {
         auto it = find_key256<Class, PtrToMember>(idx, value);
         return it != idx.end();
+    }
+
+    void validate_skills(const vector<uint64_t>& check_skills) const {
+        for (auto sit = check_skills.begin(); sit != check_skills.end(); ++sit) {
+            auto fit = skills.find(*sit);
+            eosio_assert(fit != skills.end(), "Skill doesn't exists");
+            eosio_assert(fit->enabled, "Skill is disabled");
+        }
     }
 
     void validate_title(const string& title) const {
@@ -505,7 +575,6 @@ private:
         uint64_t id;
         account_name account;
         string title;
-        string key;
         uint8_t status;
         uint64_t category;
         string description;
@@ -517,8 +586,12 @@ private:
             return id;
         }
 
+        string get_key() const {
+            return name{account}.to_string() + ":" + title;
+        }
+
         key256 by_key() const {
-            return beesocial::string_to_key256(key);
+            return beesocial::string_to_key256(get_key());
         }
 
         EOSLIB_SERIALIZE(resource_t, (id)(account)(title)(status)(category)(description)(how_get)(contacts)(price));
@@ -530,6 +603,41 @@ private:
     >;
 
     resource_index resources;
+
+    //@abi table projects i64
+    struct project_t {
+        uint64_t id;
+        uint64_t npo;
+        string title;
+        string description;
+        vector<uint64_t> skills;
+        time_point_sec created;
+        time_point_sec date_from;
+        time_point_sec date_to;
+        uint8_t status;
+        asset price;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        string get_key() const {
+            return to_string(npo) + ":" + title;
+        }
+
+        key256 by_key() const {
+            return beesocial::string_to_key256(get_key());
+        }
+
+        EOSLIB_SERIALIZE(project_t, (id)(npo)(title)(description)(skills)(created)(date_from)(date_to)(status)(price));
+    };
+
+    using project_index = multi_index<
+        N(projects), project_t,
+        indexed_by<N(project.keys), const_mem_fun<project_t, key256, &project_t::by_key>>
+    >;
+
+    project_index projects;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource))
+EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project))
