@@ -3,6 +3,8 @@
 #include <eosiolib/contract.hpp>
 #include <eosiolib/time.hpp>
 
+#include <cmath>
+
 using eosio::key256;
 using eosio::time_point_sec;
 using eosio::asset;
@@ -19,6 +21,7 @@ using std::vector;
 using std::array;
 using std::to_string;
 using std::set;
+using std::map;
 
 #define BEESOCIAL_SYMBOL (eosio::string_to_symbol(4, "BEESOCIAL"))
 
@@ -26,7 +29,8 @@ enum project_status {
     project_created = 0,
     project_started = 1,
     project_canceled = 2,
-    project_complete = 3
+    project_complete = 3,
+    project_rewarded = 4
 
 };
 
@@ -169,6 +173,7 @@ public:
                 s.location = location;
                 s.positive = 0;
                 s.negative = 0;
+                s.reward = asset(0, BEESOCIAL_SYMBOL);
                 s.enabled = enabled;
             });
         } else {
@@ -305,7 +310,6 @@ public:
         string title,
         string description,
         vector<uint64_t> skills,
-        time_point_sec created,
         time_point_sec date_from,
         time_point_sec date_to,
         asset price,
@@ -334,13 +338,15 @@ public:
                 s.title = title;
                 s.description = description;
                 s.skills = skills;
-                s.created = created;
+                s.created = time_point_sec(now());
+                s.done = time_point_sec::min();
                 s.date_from = date_from;
                 s.date_to = date_to;
                 s.status = project_created;
                 s.price = price;
                 s.required = required;
                 s.hired = 0;
+                s.rewarded = 0;
             });
         } else {
             eosio_assert(it->status == project_created, "Project can't be modified after started/canceled/complete.");
@@ -349,7 +355,6 @@ public:
             idx.modify(it, 0, [&](auto& s){
                 s.description = description;
                 s.skills = skills;
-                s.created = created;
                 s.date_from = date_from;
                 s.date_to = date_to;
                 s.price = price;
@@ -395,6 +400,7 @@ public:
                 s.worker = worker;
                 s.status = status;
                 s.created = time_point_sec(now());
+                s.done = time_point_sec::min();
                 s.reward = asset(0, BEESOCIAL_SYMBOL);
             });
 
@@ -506,12 +512,47 @@ public:
             }
         }
 
-        if (cnt != (*pit).required) {
-            projects.modify(pit, 0, [&](auto& p) {
-                p.status = project_complete;
-                p.done = t;
-            });
+        projects.modify(pit, 0, [&](auto& p) {
+            p.status = project_complete;
+            p.rewarded = cnt;
+            p.done = t;
+        });
             // TRANSFER to npo
+    }
+
+    // @abi action
+    void reward() {
+        uint64_t bt(1);
+        // time_point_sec et(now() - 42 * 24 * 60 * 60 - ); // 42 days
+        uint64_t et(current_time() - 10); // 10 seconds before for tests
+
+        set<uint64_t> selected_projects;
+        map<uint64_t, uint64_t> selected_qp;
+        map<uint64_t, uint64_t> selected_qv;
+
+
+        auto idx = projects.template get_index<N(project.dones)>();
+        auto it = idx.lower_bound(bt);
+        for (; it != idx.end() && (*it).by_done() <= et; --it) {
+            selected_qp[(*it).npo]++;
+            selected_qv[(*it).npo] += (*it).rewarded;
+            selected_projects.insert((*it).id);
+        }
+
+        for (auto& pid: selected_projects) {
+            projects.modify(projects.find(pid), 0, [&](auto& p){
+               p.status = project_rewarded;
+            });
+        }
+
+        for (auto qit = selected_qp.begin(); qit != selected_qp.end(); ++qit) {
+            auto qp = (*qit).second;
+            auto qv = selected_qv[(*qit).first];
+            auto v = (std::log(qp) * 10 * 10000 /* symbol precision */) / std::log(qv);
+
+            npos.modify(npos.find((*qit).first), 0, [&](auto& n){
+               n.reward.amount += v;
+            });
         }
     }
 
@@ -639,12 +680,25 @@ private:
             return account;
         }
 
+        uint32_t get_quantity() const {
+            if (positive > negative) {
+                return positive - negative;
+            } else {
+                return 0;
+            }
+        }
+
+        uint64_t by_quantity() const {
+            return std::numeric_limits<uint32_t>::max() - get_quantity();
+        }
+
         EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(sex)(birth_date)(skills)(positive)(negative)(enabled));
     };
 
     using worker_index = multi_index<
         N(workers), worker_t,
-        indexed_by<N(worker.accounts), const_mem_fun<worker_t, account_name, &worker_t::by_account>>
+        indexed_by<N(worker.accounts), const_mem_fun<worker_t, account_name, &worker_t::by_account>>,
+        indexed_by<N(worker.quantities), const_mem_fun<worker_t, uint64_t, &worker_t::by_quantity>>
     >;
 
     worker_index workers;
@@ -693,12 +747,25 @@ private:
             return account;
         }
 
+        uint32_t get_quantity() const {
+            if (positive > negative) {
+                return positive - negative;
+            } else {
+                return 0;
+            }
+        }
+
+        uint64_t by_quantity() const {
+            return std::numeric_limits<uint32_t>::max() - get_quantity();
+        }
+
         EOSLIB_SERIALIZE(sponsor_t, (id)(account)(title)(location)(description)(activities)(positive)(negative)(enabled));
     };
 
     using sponsor_index = multi_index<
         N(sponsors), sponsor_t,
-        indexed_by<N(sponsor.accounts), const_mem_fun<sponsor_t, account_name, &sponsor_t::by_account>>
+        indexed_by<N(sponsor.accounts), const_mem_fun<sponsor_t, account_name, &sponsor_t::by_account>>,
+        indexed_by<N(sponsor.quantities), const_mem_fun<sponsor_t, uint64_t, &sponsor_t::by_quantity>>
     >;
 
     sponsor_index sponsors;
@@ -712,6 +779,7 @@ private:
         string location;
         uint32_t positive;
         uint32_t negative;
+        asset reward;
         bool enabled;
 
         uint64_t primary_key() const {
@@ -722,12 +790,25 @@ private:
             return account;
         }
 
-        EOSLIB_SERIALIZE(npo_t, (id)(account)(title)(description)(location)(positive)(negative)(enabled));
+        uint32_t get_quantity() const {
+            if (positive > negative) {
+                return positive - negative;
+            } else {
+                return 0;
+            }
+        }
+
+        uint64_t by_quantity() const {
+            return std::numeric_limits<uint32_t>::max() - get_quantity();
+        }
+
+        EOSLIB_SERIALIZE(npo_t, (id)(account)(title)(description)(location)(positive)(negative)(reward)(enabled));
     };
 
     using npo_index = multi_index<
         N(npos), npo_t,
-        indexed_by<N(npo.accounts), const_mem_fun<npo_t, account_name, &npo_t::by_account>>
+        indexed_by<N(npo.accounts), const_mem_fun<npo_t, account_name, &npo_t::by_account>>,
+        indexed_by<N(npo.quantities), const_mem_fun<npo_t, uint64_t, &npo_t::by_quantity>>
     >;
 
     npo_index npos;
@@ -806,6 +887,7 @@ private:
         asset price;
         uint32_t required;
         uint32_t hired;
+        uint32_t rewarded;
 
         uint64_t primary_key() const {
             return id;
@@ -819,12 +901,21 @@ private:
             return beesocial::string_to_key256(get_key());
         }
 
-        EOSLIB_SERIALIZE(project_t, (id)(npo)(title)(description)(skills)(created)(date_from)(date_to)(status)(price)(required));
+        uint64_t by_done() const {
+            if (status == project_rewarded) {
+                return done.utc_seconds;
+            } else {
+                return 0;
+            }
+        }
+
+        EOSLIB_SERIALIZE(project_t, (id)(npo)(title)(description)(skills)(created)(date_from)(date_to)(status)(price)(required)(hired)(rewarded));
     };
 
     using project_index = multi_index<
         N(projects), project_t,
-        indexed_by<N(project.keys), const_mem_fun<project_t, key256, &project_t::by_key>>
+        indexed_by<N(project.keys), const_mem_fun<project_t, key256, &project_t::by_key>>,
+        indexed_by<N(project.dones), const_mem_fun<project_t, uint64_t, &project_t::by_done>>
     >;
 
     project_index projects;
@@ -858,4 +949,4 @@ private:
     request_index requests;
 };
 
-EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete))
+EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete)(reward))
