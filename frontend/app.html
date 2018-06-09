@@ -167,35 +167,35 @@
 						<form>
 							<div class="form-group">
 								<label for="title">Name:</label>
-								<input type="text" class="form-control" id="title" name="title" required="">
+								<input type="text" class="form-control" id="title-project" name="title" required="">
 							</div>
 							<div class="form-group">
 								<label for="description">Description:</label>
-								<textarea class="form-control" id="description" name="description" rows="5" required=""></textarea>
+								<textarea class="form-control" id="description-project" name="description" rows="5" required=""></textarea>
 							</div>
 							<div class="form-group">
 								<label for="how-get">Location:</label>
-								<input type="text" class="form-control" id="how-get" name="howGet" required="">
+								<input type="text" class="form-control" id="how-get-project" name="howGet" required="">
 							</div>
 							<div class="form-group">
 								<label for="contacts">Short description:</label>
-								<input type="text" class="form-control" id="contacts" name="contacts" required="">
+								<input type="text" class="form-control" id="contacts-project" name="contacts" required="">
 							</div>
 							<div class="form-group">
 								<label for="combs">Number of social workers required:</label>
-								<input type="number" class="form-control" id="combs" name="combs" min="1" required="">
+								<input type="number" class="form-control" id="combs-project" name="combs" min="1" required="">
 							</div>
 							<div class="form-group">
 								<label for="data-start">Start date and time:</label>
-								<input type="number" class="form-control" id="data-start" name="data-start" min="1" required="">
+								<input type="number" class="form-control" id="date-start-project" name="data-start" min="1" required="">
 							</div>
 							<div class="form-group">
 								<label for="data-end">End date and time:</label>
-								<input type="number" class="form-control" id="data-end" name="data-end" min="1" required="">
+								<input type="number" class="form-control" id="date-end-project" name="data-end" min="1" required="">
 							</div>
 							<div class="form-group">
 								<label for="cost">Cost of participation in honeycombs:</label>
-								<input type="number" class="form-control" id="cost" name="cost" min="1" required="">
+								<input type="number" class="form-control" id="combs-project" name="cost" min="1" required="">
 							</div>
 					</div>
 					<div class="modal-footer">
@@ -218,23 +218,23 @@
 						<form>
 							<div class="form-group">
 								<label for="title">Name:</label>
-								<input type="text" class="form-control" id="title" name="title" required="">
+								<input type="text" class="form-control" id="title-resource" name="title" required="">
 							</div>
 							<div class="form-group">
 								<label for="description">Description:</label>
-								<textarea class="form-control" id="description" name="description" rows="5" required=""></textarea>
+								<textarea class="form-control" id="description-resource" name="description" rows="5" required=""></textarea>
 							</div>
 							<div class="form-group">
 								<label for="how-get">How to get it:</label>
-								<input type="text" class="form-control" id="how-get" name="howGet" required="">
+								<input type="text" class="form-control" id="how-get-resource" name="howGet" required="">
 							</div>
 							<div class="form-group">
 								<label for="contacts">Conracts:</label>
-								<input type="text" class="form-control" id="contacts" name="contacts" required="">
+								<input type="text" class="form-control" id="contacts-resource" name="contacts" required="">
 							</div>
 							<div class="form-group">
 								<label for="combs">Count of honeycombs:</label>
-								<input type="number" class="form-control" id="combs" name="combs" min="1" required="">
+								<input type="number" class="form-control" id="combs-resource" name="combs" min="1" required="">
 							</div>
 							<button type="submit" class="btn btn-success">Create resource</button>
 						</form>
@@ -318,14 +318,14 @@
 									<div class="input-group-prepend">
 										<div class="input-group-text">@</div>
 									</div>
-									<input type="text" class="form-control" id="input-user" placeholder="login" required="">
+									<input type="text" class="form-control" id="input-name" placeholder="login" required="">
 								</div>
 							</div>
 							<div class="form-group">
 								<input id="input-pass" type="password" class="form-control" placeholder="password" aria-label="Password" aria-describedby="Password" required="">
 							</div>
-								<label for="sel1">Select your gender:</label>
-								<select class="form-control" id="sel1">
+							<label for="sel1">Select your gender:</label>
+							<select class="form-control" id="gender-select">
 									<option>female</option>
 									<option>male</option>
 									<option>none</option>
@@ -337,6 +337,72 @@
 							<button type="submit" id="log-pass-log" class="btn btn-success align-self-center"><span class="icon-enter"></span> Login</button>
 						</form>
 					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal" id="edit-npo-modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Edit profile</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label for="title">Title:</label>
+								<input type="text" class="form-control" id="title-npo" name="title-npo" required="">
+							</div>
+							<div class="form-group">
+								<label for="description">Description:</label>
+								<textarea class="form-control" id="description-npo" name="description-npo" rows="5" required=""></textarea>
+							</div>
+							<div class="form-group">
+								<label for="location">Location:</label>
+								<input type="text" class="form-control" id="location-npo" name="location-npo" required="">
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">Apply changes</button>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="modal" id="edit-sponsors-modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Edit profile</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label for="title">Title:</label>
+								<input type="text" class="form-control" id="title-sponsor" name="title" required="">
+							</div>
+							<div class="form-group">
+								<label for="description">Description:</label>
+								<textarea class="form-control" id="description-sponsor" name="description" rows="5" required=""></textarea>
+							</div>
+							<div class="form-group">
+								<label for="location">Activity:</label>
+								<input type="text" class="form-control" id="activity-sponsor" name="activity-sponsor" required="">
+							</div>
+							<div class="form-group">
+								<label for="location">Location:</label>
+								<input type="text" class="form-control" id="location-sponsor" name="location" required="">
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-success">Apply changes</button>
+					</div>
+					</form>
 				</div>
 			</div>
 		</div>
