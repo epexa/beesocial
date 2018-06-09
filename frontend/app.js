@@ -35,7 +35,7 @@ let $resourceItem = document.querySelector('#resource-item'); */
 eos.getTableRows({
 	scope: 'beesocial',
 	code: 'beesocial',
-	table: 'skills',
+	table: 'workers',
 	json: true
 }, (err, res) => {
 	if ( ! err) {
@@ -65,6 +65,8 @@ eos.getTableRows({
 
 let $login = document.getElementById('login');
 let $logout = document.getElementById('logout');
+
+let callbackAuth;
 
 document.getElementById('form-login-pass').addEventListener('submit', e => {
 	e.preventDefault();
