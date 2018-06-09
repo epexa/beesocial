@@ -7,7 +7,6 @@ var eos = Eos(options);
 eos.getInfo((err, info) => {
 	console.log(err, info);
 });
-<<<<<<< HEAD
 
 eos.getCode({ account_name: 'beesocial' }, (err, res) => {
 	if ( ! err) {
@@ -29,5 +28,3 @@ eos.getTableRows({
 	}
 	else console.error(err);
 });
-=======
->>>>>>> fc222f2c383ae5ca0d1d450da945cb7408b3a54b
