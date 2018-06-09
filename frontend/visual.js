@@ -20,43 +20,48 @@ let modalAuth = new Modal(document.getElementById('auth'));
 let resourceItemSelected;
 
 let arr = document.querySelector('#projects').querySelectorAll('.btn');
-arr.forEach(function(item, i, arr) {
-  arr[i].addEventListener('click', function() {
-	projectModal.show(); // projects modals
+arr.forEach(function (item, i, arr) {
+	arr[i].addEventListener('click', function () {
+		projectModal.show(); // projects modals
 	});
 });
 
-window.addEventListener('hashchange', function() {
+window.addEventListener('hashchange', function () {
 	let hash = window.location.hash.substring(1);
 	if (hash) {
 		let params = hash.split('/');
-			console.log(params);
+		console.log(params);
 		if (params[0]) {
 			switch (params[0]) {
-				case 'resources': {
-					$mainPage.style.display = 'none';
-					$purchasedResourcesPage.style.display = 'none';
-					$projectsPage.style.display = 'none';
-					$resourcesPage.style.display = 'block';
-					getResources();
-				}; break;
-				case 'projects': {
-					$mainPage.style.display = 'none';
-					$purchasedResourcesPage.style.display = 'none';
-					$resourcesPage.style.display = 'none';
-					$projectsPage.style.display = 'block';
-				}; break;
-				case 'purchased-resources': {
-					$mainPage.style.display = 'none';
-					$resourcesPage.style.display = 'none';
-					$projectsPage.style.display = 'none';
-					$purchasedResourcesPage.style.display = 'block';
-					showPurchasedResources();
-				}; break;
+				case 'resources':
+					{
+						$mainPage.style.display = 'none';
+						$purchasedResourcesPage.style.display = 'none';
+						$projectsPage.style.display = 'none';
+						$resourcesPage.style.display = 'block';
+						getResources();
+					};
+					break;
+				case 'projects':
+					{
+						$mainPage.style.display = 'none';
+						$purchasedResourcesPage.style.display = 'none';
+						$resourcesPage.style.display = 'none';
+						$projectsPage.style.display = 'block';
+					};
+					break;
+				case 'purchased-resources':
+					{
+						$mainPage.style.display = 'none';
+						$resourcesPage.style.display = 'none';
+						$projectsPage.style.display = 'none';
+						$purchasedResourcesPage.style.display = 'block';
+						showPurchasedResources();
+					};
+					break;
 			}
 		}
-	}
-	else {
+	} else {
 		$purchasedResourcesPage.style.display = 'none';
 		$mainPage.style.display = 'block';
 	}
@@ -70,10 +75,12 @@ document.querySelector('#dropdown-avatar').addEventListener('click', function ()
 	document.querySelector('#dropdown-avatar').classList.remove('show');
 });
 
-document.getElementById('create-project-btn').addEventListener('click', function() {
+document.getElementById('create-project-btn').addEventListener('click', function () {
 	createProjectModal.show();
 });
 
-document.getElementById('create-resource-btn').addEventListener('click', function() {
+document.getElementById('create-resource-btn').addEventListener('click', function () {
 	createResourceModal.show();
 });
+
+window.dispatchEvent(new CustomEvent('hashchange'));

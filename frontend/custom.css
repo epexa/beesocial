@@ -11,6 +11,7 @@
 }
 
 #projects {
+	display: flex;
 	height: 400px;
 }
 
@@ -25,4 +26,17 @@
 
 #resources-page {
 	display: none;
+}
+
+#purchased-resources-page {
+	display: none;
+}
+
+#noprojects {
+	display: none;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, 50%);
+	color: dimgrey;
 }
