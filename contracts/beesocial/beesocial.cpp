@@ -532,4 +532,4 @@ private:
     resource_index resources;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category))
+EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource))
