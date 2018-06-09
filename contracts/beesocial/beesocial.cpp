@@ -25,14 +25,16 @@ using std::set;
 enum project_status {
     project_created = 0,
     project_started = 1,
-    project_complete = 2
+    project_canceled = 2,
+    project_complete = 3
+
 };
 
 enum request_status {
     request_enabled = 0,
     request_disabled = 1,
-    request_confirm = 2,
-    request_failed = 3
+    request_failed = 2,
+    request_complete = 3
 };
 
 class beesocial: public eosio::contract {
@@ -355,11 +357,7 @@ public:
     }
 
     // @abi action
-    void request(
-        uint64_t project,
-        uint64_t worker,
-        uint8_t status
-    ) {
+    void request(const uint64_t project, const uint64_t worker, const uint8_t status) {
         print("bee_social::request\n");
 
         auto pit = projects.find(project);
@@ -400,6 +398,83 @@ public:
             idx.modify(it, 0, [&](auto& s){
                 s.status = status;
             });
+        }
+    }
+
+    // @abi action
+    void fail(const uint64_t project, const uint64_t worker) {
+        print("bee_social::fail\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_started, "Project isn't started");
+
+        auto wit = workers.find(worker);
+        eosio_assert(wit != workers.end(), "Worker doesn't exist");
+
+        auto key = (static_cast<uint128_t>(project) << 64) + worker;
+        auto idx = requests.template get_index<N(request.keys)>();
+        auto it = idx.find(key);
+
+        eosio_assert(it != idx.end(), "Request doesn't exist");
+
+        idx.modify(it, 0, [&](auto& r){
+            r.status = request_failed;
+            r.done = time_point_sec(now());
+        });
+    }
+
+    // @abi action
+    void cancel(const uint64_t project) {
+        print("bee_social::cancel\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_created, "Project status is incorrect");
+
+        projects.modify(pit, 0, [&](auto& p) {
+            p.status = project_canceled;
+            p.done = time_point_sec(now());
+        });
+    }
+
+    // @abi action
+    void complete(const uint64_t project) {
+        print("bee_social::complete\n");
+
+        auto pit = projects.find(project);
+        eosio_assert(pit != projects.end(), "Project doesn't exist");
+        eosio_assert((*pit).status == project_started, "Project isn't started");
+
+        auto key = (static_cast<uint128_t>(project) << 64);
+        auto idx = requests.template get_index<N(request.keys)>();
+        auto it = idx.lower_bound(key);
+        uint32_t cnt = 0;
+        time_point_sec t(now());
+
+        for (; it != idx.end() && (*it).project == project; ++it) {
+            if ((*it).status != request_enabled) {
+                continue;
+            }
+
+            auto wit = workers.find((*it).worker);
+            if ((*wit).enabled) {
+                idx.modify(it, 0, [&](auto& s) {
+                    s.done = t;
+                    s.status = request_complete;
+                    s.reward = (*pit).price;
+                });
+                // TRANSFER to worker
+                cnt++;
+            }
+        }
+
+        if (cnt != (*pit).required) {
+            projects.modify(pit, 0, [&](auto& p) {
+                p.status = project_complete;
+                p.done = t;
+            });
+            // TRANSFER to npo
         }
     }
 
@@ -687,6 +762,7 @@ private:
         string description;
         vector<uint64_t> skills;
         time_point_sec created;
+        time_point_sec done;
         time_point_sec date_from;
         time_point_sec date_to;
         uint8_t status;
@@ -721,6 +797,7 @@ private:
         uint64_t project;
         uint64_t worker;
         time_point_sec created;
+        time_point_sec done;
         int8_t status;
         asset reward;
 
@@ -743,4 +820,4 @@ private:
     request_index requests;
 };
 
-EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request))
+EOSIO_ABI(beesocial, (skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(cancel)(fail)(complete))
