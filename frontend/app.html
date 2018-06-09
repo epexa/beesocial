@@ -153,6 +153,121 @@
 				</div>
 			</div>
 		</div>
+		<div class="modal" id="create-project-modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Создание проекта</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label for="title">Название:</label>
+								<input type="text" class="form-control" id="title" name="title" required="">
+							</div>
+							<div class="form-group">
+								<label for="description">Описание:</label>
+								<textarea class="form-control" id="description" name="description" rows="5" required=""></textarea>
+							</div>
+							<div class="form-group">
+								<label for="how-get">Местоположение с картой:</label>
+								<input type="text" class="form-control" id="how-get" name="howGet" required="">
+							</div>
+							<div class="form-group">
+								<label for="contacts">Краткое описание:</label>
+								<input type="text" class="form-control" id="contacts" name="contacts" required="">
+							</div>
+							<div class="form-group">
+								<label for="combs">Кол-во необходимых волонтеров:</label>
+								<input type="number" class="form-control" id="combs" name="combs" min="1" required="">
+							</div>
+							<div class="form-group">
+								<label for="data-start">Дата и время начала проекта:</label>
+								<input type="number" class="form-control" id="data-start" name="data-start" min="1" required="">
+							</div>
+							<div class="form-group">
+								<label for="data-end">Дата и время окончания проекта:</label>
+								<input type="number" class="form-control" id="data-end" name="data-end" min="1" required="">
+							</div>
+							<div class="form-group">
+								<label for="cost">Стоимость участия в сотах:</label>
+								<input type="number" class="form-control" id="cost" name="cost" min="1" required="">
+							</div>
+							<button type="submit" class="btn btn-success">Создать проект</button>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal" id="create-resource-modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Resource create</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label for="title">Name:</label>
+								<input type="text" class="form-control" id="title" name="title" required="">
+							</div>
+							<div class="form-group">
+								<label for="description">Description:</label>
+								<textarea class="form-control" id="description" name="description" rows="5" required=""></textarea>
+							</div>
+							<div class="form-group">
+								<label for="how-get">How to get it:</label>
+								<input type="text" class="form-control" id="how-get" name="howGet" required="">
+							</div>
+							<div class="form-group">
+								<label for="contacts">Conracts:</label>
+								<input type="text" class="form-control" id="contacts" name="contacts" required="">
+							</div>
+							<div class="form-group">
+								<label for="combs">Count of honeycombs:</label>
+								<input type="number" class="form-control" id="combs" name="combs" min="1" required="">
+							</div>
+							<button type="submit" class="btn btn-success">Create resource</button>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal" id="resource-modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Detailed information about the resource</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<h3>Name: <span class="badge badge-secondary" id="resource-title">resource title</span></h3>
+						<h3>Description: <span class="badge badge-secondary" id="resource-description">resource description</span></h3>
+						<h3>How to get it: <span class="badge badge-secondary" id="resource-how-get">resource how get</span></h3>
+						<h3>Contacts: <span class="badge badge-secondary" id="resource-contacts">resource contacts</span></h3>
+						<h3>Count of honeycombs: <span class="badge badge-secondary" id="resource-combs">resource combs</span></h3>
+						<button type="submit" class="btn btn-success" id="buy-resource-btn">Purchase resource</button>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</article>
 	<footer>
 
