@@ -55,6 +55,7 @@ public:
         account_name account,
         const string& full_name,
         const string& location,
+        const uint8_t sex,
         time_point_sec birth_date,
         vector<uint64_t> worker_skills,
         bool enabled
@@ -81,7 +82,9 @@ public:
                 s.account = account;
                 s.full_name = full_name;
                 s.location = location;
+                s.sex = sex;
                 s.birth_date = birth_date;
+                s.score = 0;
                 s.skills = worker_skills;
                 s.enabled = enabled;
             });
@@ -91,6 +94,7 @@ public:
             idx.modify(it, 0, [&](auto& s){
                 s.full_name = full_name;
                 s.location = location;
+                s.sex = sex;
                 s.birth_date = birth_date;
                 s.skills = worker_skills;
                 s.enabled = enabled;
@@ -180,8 +184,10 @@ private:
         account_name account;
         string full_name;
         string location;
+        uint8_t sex;
         time_point_sec birth_date;
         vector<uint64_t> skills;
+        uint32_t score;
         bool enabled;
 
         uint64_t primary_key() const {
@@ -192,7 +198,7 @@ private:
             return account;
         }
 
-        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(birth_date)(skills)(enabled));
+        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(sex)(birth_date)(skills)(score)(enabled));
     };
 
     using worker_index = multi_index<
