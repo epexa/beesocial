@@ -57,7 +57,8 @@ public:
           categorities(_self, _self),
           resources(_self, _self),
           projects(_self, _self),
-          requests(_self, _self) {
+          requests(_self, _self),
+          votes(_self, _self) {
     }
 
     // @abi action
@@ -413,7 +414,6 @@ public:
         eosio_assert(pit != projects.end(), "Project doesn't exist");
         eosio_assert((*pit).status == project_started, "Project isn't started");
 
-
         auto widx = workers.template get_index<N(worker.accounts)>();
         auto wit = widx.find(worker);
         eosio_assert(wit != widx.end(), "Worker doesn't exist");
@@ -643,6 +643,36 @@ public:
                 std::make_tuple(_self, nit->account, reward, std::string("Reward from beesocial"))
             ).send();
         }
+    }
+
+    // @abi action
+    void vote(
+        account_name from,
+        account_name to,
+        string description,
+        int8_t state
+    ) {
+        print("bee_social::vote\n");
+
+        require_recipient(from);
+        require_recipient(to);
+        validate_description(description);
+
+        eosio_assert(-1 == state || 0 == state || 1 == state, "Invalid state");
+
+        auto key = (static_cast<uint128_t>(from) << 64) + to;
+        auto idx = votes.template get_index<N(vote.accounts)>();
+        auto it = idx.find(key);
+
+        eosio_assert(it == idx.end(), "Vote already exists");
+
+        votes.emplace(_self, [&](auto& s) {
+            s.id = votes.available_primary_key();
+            s.from = from;
+            s.to = to;
+            s.description = description;
+            s.state = state;
+        });
     }
 
     static key256 string_to_key256(const std::string& src) {
@@ -1038,6 +1068,32 @@ private:
     >;
 
     request_index requests;
+
+    // @abi table vote i64
+    struct vote_t {
+        uint64_t id;
+        account_name from;
+        account_name to;
+        string description;
+        int8_t state;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        uint128_t by_account() const {
+            return (static_cast<uint128_t>(from) << 64) + to;
+        }
+
+        EOSLIB_SERIALIZE(vote_t, (id)(from)(to)(description)(state));
+    };
+
+    using vote_index = multi_index<
+        N(votes), vote_t,
+        indexed_by<N(vote.accounts), const_mem_fun<vote_t, uint128_t, &vote_t::by_account>>
+    >;
+
+    vote_index votes;
 };
 
-EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete)(reward))
+EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete)(reward)(vote))
