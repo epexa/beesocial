@@ -23,7 +23,7 @@ using std::to_string;
 using std::set;
 using std::map;
 
-#define BEESOCIAL_SYMBOL (eosio::string_to_symbol(4, "BEESOCIAL"))
+#define BEESOCIAL_SYMBOL (eosio::string_to_symbol(4, "BEOS"))
 
 enum project_status {
     project_created = 0,
@@ -110,6 +110,7 @@ public:
                 s.positive = 0;
                 s.negative = 0;
                 s.skills = worker_skills;
+                s.reward = asset(0, BEESOCIAL_SYMBOL);
                 s.enabled = enabled;
             });
         } else {
@@ -166,7 +167,7 @@ public:
 
         if (it == idx.end()) {
             npos.emplace(_self, [&](auto& s) {
-                s.id = workers.available_primary_key();
+                s.id = npos.available_primary_key();
                 s.account = account;
                 s.title = title;
                 s.description = description;
@@ -212,6 +213,7 @@ public:
                 s.location = location;
                 s.positive = 0;
                 s.negative = 0;
+                s.reward = asset(0, BEESOCIAL_SYMBOL);
                 s.activities = activities;
                 s.enabled = enabled;
             });
@@ -306,7 +308,7 @@ public:
 
     // @abi action
     void project(
-        uint64_t npo,
+        account_name npo,
         string title,
         string description,
         vector<uint64_t> skills,
@@ -320,21 +322,27 @@ public:
         validate_title(title);
         validate_description(description);
         validate_skills(skills);
+        validate_asset(price);
 
         eosio_assert(required > 0, "Required workers should be more than zero");
 
-        auto nit = npos.find(npo);
-        eosio_assert(nit != npos.end(), "NPO doesn't exists");
+        price.print();
+        eosio::print("\n");
+
+        auto nidx = npos.template get_index<N(npo.accounts)>();
+        auto nit = nidx.find(npo);
+        eosio_assert(nit != nidx.end(), "NPO doesn't exists");
         eosio_assert((*nit).enabled, "NPO is disabled");
 
-        auto key = to_string(npo) + ":" + title;
+
+        auto key = to_string((*nit).id) + ":" + title;
         auto idx = projects.template get_index<N(project.keys)>();
         auto it = find_key256_fun<project_t, &project_t::get_key>(idx, key);
 
         if (it == idx.end()) {
             projects.emplace(_self, [&](auto& s) {
                 s.id = projects.available_primary_key();
-                s.npo = npo;
+                s.npo = (*nit).id;
                 s.title = title;
                 s.description = description;
                 s.skills = skills;
@@ -670,6 +678,7 @@ private:
         vector<uint64_t> skills;
         uint32_t positive;
         uint32_t negative;
+        asset reward;
         bool enabled;
 
         uint64_t primary_key() const {
@@ -692,7 +701,7 @@ private:
             return std::numeric_limits<uint32_t>::max() - get_quantity();
         }
 
-        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(sex)(birth_date)(skills)(positive)(negative)(enabled));
+        EOSLIB_SERIALIZE(worker_t, (id)(account)(full_name)(location)(sex)(birth_date)(skills)(positive)(negative)(reward)(enabled));
     };
 
     using worker_index = multi_index<
@@ -737,6 +746,7 @@ private:
         vector<uint64_t> activities;
         uint32_t positive;
         uint32_t negative;
+        asset reward;
         bool enabled;
 
         uint64_t primary_key() const {
@@ -759,7 +769,7 @@ private:
             return std::numeric_limits<uint32_t>::max() - get_quantity();
         }
 
-        EOSLIB_SERIALIZE(sponsor_t, (id)(account)(title)(location)(description)(activities)(positive)(negative)(enabled));
+        EOSLIB_SERIALIZE(sponsor_t, (id)(account)(title)(location)(description)(activities)(positive)(negative)(reward)(enabled));
     };
 
     using sponsor_index = multi_index<
@@ -909,7 +919,7 @@ private:
             }
         }
 
-        EOSLIB_SERIALIZE(project_t, (id)(npo)(title)(description)(skills)(created)(date_from)(date_to)(status)(price)(required)(hired)(rewarded));
+        EOSLIB_SERIALIZE(project_t, (id)(npo)(title)(description)(skills)(created)(done)(date_from)(date_to)(status)(price)(required)(hired)(rewarded));
     };
 
     using project_index = multi_index<
