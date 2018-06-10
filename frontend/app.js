@@ -13,11 +13,12 @@ var eos = Eos(options);
 	console.log(err, info);
 }); */
 
-eos.getCode({ account_name: 'beesocial' }, (err, res) => {
-	if ( ! err) {
+eos.getCode({
+	account_name: 'beesocial'
+}, (err, res) => {
+	if (!err) {
 		console.log('smartcontract', res.abi);
-	}
-	else console.error(err);
+	} else console.error(err);
 });
 
 let $loader = document.getElementsByClassName('lding')[0];
@@ -40,7 +41,7 @@ let getResources = () => {
 		table: 'resources',
 		json: true
 	}, (err, res) => {
-		if ( ! err) {
+		if (!err) {
 			res.rows.forEach(item => {
 				//console.log('resource', item);
 				let $newItem = $resourceItem.cloneNode(true);
@@ -59,11 +60,26 @@ let getResources = () => {
 				$newItem.style.display = 'block';
 				$resources.appendChild($newItem);
 			});
-		}
-		else console.error(err);
+		} else console.error(err);
 	});
 };
 getResources();
+
+let getEmployeesByProject = () => {
+	eos.getTableRows({
+		scope: 'beesocial',
+		code: 'beesocial',
+		table: 'requests',
+		json: true
+	}, (err, res) => {
+		if (!err) {
+			res.rows.forEach(item => {
+				// console.log('request', item);
+				item.worker;
+			})
+		} else console.error(err);
+	})
+}
 
 let project_id;
 let getProjects = () => {
@@ -73,7 +89,7 @@ let getProjects = () => {
 		table: 'projects',
 		json: true
 	}, (err, res) => {
-		if ( ! err) {
+		if (!err) {
 			console.log(res);
 			res.rows.forEach(item => {
 				console.log('resource', item);
@@ -96,8 +112,7 @@ let getProjects = () => {
 				$newItem.style.display = 'block';
 				$projects.appendChild($newItem);
 			});
-		}
-		else console.error(err);
+		} else console.error(err);
 	});
 };
 getProjects();
@@ -109,10 +124,10 @@ let getWorkersTable = () => {
 		table: 'workers',
 		json: true
 	}, (err, res) => {
-		if ( ! err) {
+		if (!err) {
 			res.rows.forEach(item => {
 				console.log('item', item);
-				
+
 				/* let $newItem = $resourceItem.cloneNode(true);
 				$newItem.querySelector('.card-title').innerHTML = item.title;
 				$newItem.querySelector('.card-text').innerHTML = item.description;
@@ -128,10 +143,9 @@ let getWorkersTable = () => {
 				});
 				$newItem.style.display = 'block';
 				$resources.appendChild($newItem); */
-				
+
 			});
-		}
-		else console.error(err);
+		} else console.error(err);
 	});
 };
 getWorkersTable();
@@ -183,7 +197,9 @@ $createResourceModalForm.addEventListener('submit', e => {
 	auth(() => {
 		loadingShow();
 		eos.transaction('beesocial', (operation) => {
-			operation.resource(author, title, 1, 1, description, howGet, contacts, combs + ' SOCIAL', {authorization: author}); // alice@active
+			operation.resource(author, title, 1, 1, description, howGet, contacts, combs + ' SOCIAL', {
+				authorization: author
+			}); // alice@active
 			loadingHide();
 			$createResourceModalForm.reset();
 			createResourceModal.hide();
@@ -207,7 +223,9 @@ $createProjectsModalForm.addEventListener('submit', e => {
 	auth(() => {
 		loadingShow();
 		eos.transaction('beesocial', (operation) => {
-			operation.project(npo, title, description, [skills], dateFrom, dateTo, price + ' SOCIAL', parseInt(required), {authorization: author}); // alice@active
+			operation.project(npo, title, description, [skills], dateFrom, dateTo, price + ' SOCIAL', parseInt(required), {
+				authorization: author
+			}); // alice@active
 			loadingHide();
 			$createProjectsModalForm.reset();
 			createProjectModal.hide();
@@ -222,7 +240,9 @@ document.querySelector('#join-project-btn').addEventListener('click', e => {
 	auth(() => {
 		loadingShow();
 		eos.transaction('beesocial', (operation) => { // a;ksmdakslcd
-			operation.request(account, project_id, 0, {authorization: author});
+			operation.request(account, project_id, 0, {
+				authorization: author
+			});
 			loadingHide();
 			$createProjectsModalForm.reset();
 			createProjectModal.hide();
