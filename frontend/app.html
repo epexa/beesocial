@@ -173,7 +173,7 @@
 				</ul>
 			</div>
 			<div id="encouraging-employees">
-			<label>Encouraging employees</label>
+				<label>Encouraging employees</label>
 				<table class="table table-striped">
 					<thead>
 						<tr>
@@ -219,7 +219,7 @@
 				</table>
 			</div>
 			<div id="donation-npos">
-			<label>Donation for a non-profit organizations</label>
+				<label>Donation for a non-profit organizations</label>
 				<table class="table table-striped">
 					<thead>
 						<tr>
@@ -300,7 +300,7 @@
 								<div class="col-sm-4" style="display: block; height: 100%;">
 									<img style="position: relative; left: 50%; transform: translate(-35%, 0); margin-bottom: 1rem;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22286%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20286%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_163cfa757e4%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A14pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_163cfa757e4%22%3E%3Crect%20width%3D%22180%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2247.203125%22%20y%3D%2296.3%22%3E180x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 									<h6>Name of non-profit organization</h6>
-									What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+									<div id="non-profits-name"></div>
 								</div>
 								<div class="col-sm" style="display: block; height: 100%; top: 1rem; right: 1rem;">
 									<img style="position: relative; left: 40%; transform: translate(-40%, 0); margin-bottom: 1rem;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22286%22%20height%3D%22180%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20286%20180%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_163cfa757e4%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A14pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_163cfa757e4%22%3E%3Crect%20width%3D%22286%22%20height%3D%22180%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22107.203125%22%20y%3D%2296.3%22%3E286x180%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E">
@@ -309,354 +309,356 @@
 									<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d472323.8503015012!2d113.84750722665092!3d22.352493024941683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3403e2eda332980f%3A0xf08ab3badbeac97c!2z0JPQvtC90LrQvtC90LM!5e0!3m2!1sru!2shk!4v1528388900186" width=100% height="250" frameborder="0" style="border:0" allowfullscreen></iframe>
 									<span style="margin: 1.3rem -50%;" class="badge badge-success" id="project-time">Date : June 8, 2018 (GMT+8) 0:32 AM</span>
 									<span style="margin: 1.3rem 50%;" class="badge badge-danger" id="project-cp">Number of participants available: 0</span>
+									<span style="margin: 1.3rem 50%;" class="badge badge-info" id="project-cost">Amount for participation: 0</span>
 									<div style="margin: 0 -50% 1.5rem; width: 150%;">
-										<h6>Required skills:</h6>The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.</div>
+										<h6>Required skills:</h6>
+										<div id="project-skills"></div>
+									</div>
 								</div>
-							</div>
-							<div class="modal-footer">
-								<button type="submit" class="btn btn-success" id="join-project-btn">Participate</button>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-success" id="join-project-btn">Participate</button>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="modal" id="create-project-modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Create project</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<div class="modal" id="create-project-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Create project</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
-					</div>
-					<div class="modal-body">
-						<form>
-							<div class="form-group">
-								<label for="title">Name:</label>
-								<input type="text" class="form-control" id="title-project" name="title" required="">
-							</div>
-							<div class="form-group">
-								<label for="description">Description:</label>
-								<textarea class="form-control" id="description-project" name="description" rows="5" required=""></textarea>
-							</div>
-							<!-- <div class="form-group">
+						</div>
+						<div class="modal-body">
+							<form>
+								<div class="form-group">
+									<label for="title">Name:</label>
+									<input type="text" class="form-control" id="title-project" name="title" required="">
+								</div>
+								<div class="form-group">
+									<label for="description">Description:</label>
+									<textarea class="form-control" id="description-project" name="description" rows="5" required=""></textarea>
+								</div>
+								<!-- <div class="form-group">
 								<label for="how-get">Location:</label>
 								<input type="text" class="form-control" id="how-get-project" name="howGet" required="">
 							</div> -->
-							<div class="form-group">
-								<label for="data-start">Start date and time:</label>
-								<input type="date" class="form-control" id="date-from-project" name="data-start" min="1" required="">
-							</div>
-							<div class="form-group">
-								<label for="data-end">End date and time:</label>
-								<input type="date" class="form-control" id="date-to-project" name="data-end" min="1" required="">
-							</div>
-							<div class="form-group">
-								<label for="combs">Skills:</label>
-								<select class="form-control" id="skills-project" name="combs" min="1" required="">
+								<div class="form-group">
+									<label for="data-start">Start date and time:</label>
+									<input type="date" class="form-control" id="date-from-project" name="data-start" min="1" required="">
+								</div>
+								<div class="form-group">
+									<label for="data-end">End date and time:</label>
+									<input type="date" class="form-control" id="date-to-project" name="data-end" min="1" required="">
+								</div>
+								<div class="form-group">
+									<label for="combs">Skills:</label>
+									<select class="form-control" id="skills-project" name="combs" min="1" required="">
 									<option value="1">IT</option>
 									<option value="2">Scientific</option>
 								</select>
-							</div>
-							<div class="form-group">
-								<label for="combs">Number of social workers required:</label>
-								<input type="number" class="form-control" id="required-project" name="combs" min="1" required="">
-							</div>
-							<div class="form-group">
-								<label for="cost">Cost of participation in honeycombs:</label>
-								<input type="number" class="form-control" id="price-project" name="cost" min="1" required="">
-							</div>
-							<div class="form-group">
-								<h4>Full cost of social workers: <span class="badge badge-secondary">N/A</span></h4>
-							</div>
-					</div>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Create project</button>
-					</div>
-					</form>
-				</div>
-			</div>
-		</div>
-		<div class="modal" id="create-resource-modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Resource create</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<form>
-							<div class="form-group">
-								<label for="title">Title:</label>
-								<input type="text" class="form-control" id="title-resource" name="title" required="">
-							</div>
-							<div class="form-group">
-								<label for="description">Description:</label>
-								<textarea class="form-control" id="description-resource" name="description" rows="5" required=""></textarea>
-							</div>
-							<div class="form-group">
-								<label for="how-get">How to get it:</label>
-								<input type="text" class="form-control" id="how-get-resource" name="howGet" required="">
-							</div>
-							<div class="form-group">
-								<label for="contacts">Contacts:</label>
-								<input type="text" class="form-control" id="contacts-resource" name="contacts" required="">
-							</div>
-							<div class="form-group">
-								<label for="combs">Count of honeycombs:</label>
-								<input type="number" class="form-control" id="combs-resource" name="combs" min="1" required="">
-							</div>
-							<button type="submit" class="btn btn-success">Create resource</button>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="modal" id="resource-modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Detailed information about the resource</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<h3>Name: <span class="badge badge-secondary" id="resource-title">resource title</span></h3>
-						<h3>Description: <span class="badge badge-secondary" id="resource-description">resource description</span></h3>
-						<h3>How to get it: <span class="badge badge-secondary" id="resource-how-get">resource how get</span></h3>
-						<h3>Contacts: <span class="badge badge-secondary" id="resource-contacts">resource contacts</span></h3>
-						<h3>Count of honeycombs: <span class="badge badge-secondary" id="resource-combs">resource combs</span></h3>
-						<button type="submit" class="btn btn-success" id="buy-resource-btn">Purchase resource</button>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="modal" tabindex="-1" role="dialog" id="auth" aria-hidden="false">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5>Please enter your login and password</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">×</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<br>
-						<form id="form-login-pass" class="d-flex flex-column">
-							<div class="form-group">
-								<div class="input-group">
-									<div class="input-group-prepend">
-										<div class="input-group-text">@</div>
-									</div>
-									<input type="text" class="form-control" id="input-user" placeholder="login" required="">
 								</div>
-							</div>
-							<div class="form-group">
-								<input id="input-pass" type="password" class="form-control" placeholder="password" aria-label="Password" aria-describedby="Password" required="">
-							</div>
-							<div class="form-group form-check align-self-center">
-								<input id="logged" class="form-check-input" type="checkbox" value="">
-								<label class="form-check-label">remember me</label>
-							</div>
-							<button type="submit" id="log-pass-log" class="btn btn-success align-self-center"><span class="icon-enter"></span> Login</button>
+								<div class="form-group">
+									<label for="combs">Number of social workers required:</label>
+									<input type="number" class="form-control" id="required-project" name="combs" min="1" required="">
+								</div>
+								<div class="form-group">
+									<label for="cost">Cost of participation in honeycombs:</label>
+									<input type="number" class="form-control" id="price-project" name="cost" min="1" required="">
+								</div>
+								<div class="form-group">
+									<h4>Full cost of social workers: <span class="badge badge-secondary">N/A</span></h4>
+								</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-success">Create project</button>
+						</div>
 						</form>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="modal" tabindex="-1" role="dialog" id="signin-modal" aria-hidden="false">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5>Please enter your login and password</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<div class="modal" id="create-resource-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Resource create</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						</div>
+						<div class="modal-body">
+							<form>
+								<div class="form-group">
+									<label for="title">Title:</label>
+									<input type="text" class="form-control" id="title-resource" name="title" required="">
+								</div>
+								<div class="form-group">
+									<label for="description">Description:</label>
+									<textarea class="form-control" id="description-resource" name="description" rows="5" required=""></textarea>
+								</div>
+								<div class="form-group">
+									<label for="how-get">How to get it:</label>
+									<input type="text" class="form-control" id="how-get-resource" name="howGet" required="">
+								</div>
+								<div class="form-group">
+									<label for="contacts">Contacts:</label>
+									<input type="text" class="form-control" id="contacts-resource" name="contacts" required="">
+								</div>
+								<div class="form-group">
+									<label for="combs">Count of honeycombs:</label>
+									<input type="number" class="form-control" id="combs-resource" name="combs" min="1" required="">
+								</div>
+								<button type="submit" class="btn btn-success">Create resource</button>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal" id="resource-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Detailed information about the resource</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						</div>
+						<div class="modal-body">
+							<h3>Name: <span class="badge badge-secondary" id="resource-title">resource title</span></h3>
+							<h3>Description: <span class="badge badge-secondary" id="resource-description">resource description</span></h3>
+							<h3>How to get it: <span class="badge badge-secondary" id="resource-how-get">resource how get</span></h3>
+							<h3>Contacts: <span class="badge badge-secondary" id="resource-contacts">resource contacts</span></h3>
+							<h3>Count of honeycombs: <span class="badge badge-secondary" id="resource-combs">resource combs</span></h3>
+							<button type="submit" class="btn btn-success" id="buy-resource-btn">Purchase resource</button>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal" tabindex="-1" role="dialog" id="auth" aria-hidden="false">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5>Please enter your login and password</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">×</span>
 						</button>
-					</div>
-					<div class="modal-body">
-						<br>
-						<form id="form-login-pass" class="d-flex flex-column">
-							<div class="form-group">
-								<div class="input-group">
-									<div class="input-group-prepend">
-										<div class="input-group-text">@</div>
+						</div>
+						<div class="modal-body">
+							<br>
+							<form id="form-login-pass" class="d-flex flex-column">
+								<div class="form-group">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<div class="input-group-text">@</div>
+										</div>
+										<input type="text" class="form-control" id="input-user" placeholder="login" required="">
 									</div>
-									<input type="text" class="form-control" id="input-name" placeholder="login" required="">
 								</div>
-							</div>
-							<div class="form-group">
-								<input id="input-pass" type="password" class="form-control" placeholder="password" aria-label="Password" aria-describedby="Password" required="">
-							</div>
-							<label for="sel1">Select your gender:</label>
-							<select class="form-control" id="gender-select">
+								<div class="form-group">
+									<input id="input-pass" type="password" class="form-control" placeholder="password" aria-label="Password" aria-describedby="Password" required="">
+								</div>
+								<div class="form-group form-check align-self-center">
+									<input id="logged" class="form-check-input" type="checkbox" value="">
+									<label class="form-check-label">remember me</label>
+								</div>
+								<button type="submit" id="log-pass-log" class="btn btn-success align-self-center"><span class="icon-enter"></span> Login</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal" tabindex="-1" role="dialog" id="signin-modal" aria-hidden="false">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5>Please enter your login and password</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+						</div>
+						<div class="modal-body">
+							<br>
+							<form id="form-login-pass" class="d-flex flex-column">
+								<div class="form-group">
+									<div class="input-group">
+										<div class="input-group-prepend">
+											<div class="input-group-text">@</div>
+										</div>
+										<input type="text" class="form-control" id="input-name" placeholder="login" required="">
+									</div>
+								</div>
+								<div class="form-group">
+									<input id="input-pass" type="password" class="form-control" placeholder="password" aria-label="Password" aria-describedby="Password" required="">
+								</div>
+								<label for="sel1">Select your gender:</label>
+								<select class="form-control" id="gender-select">
 									<option>female</option>
 									<option>male</option>
 									<option>none</option>
 								</select><br>
-							<div class="form-group form-check align-self-center">
-								<input id="logged" class="form-check-input" type="checkbox" value="">
-								<label class="form-check-label">remember me</label>
-							</div>
-							<button type="submit" id="log-pass-log" class="btn btn-success align-self-center"><span class="icon-enter"></span> Login</button>
+								<div class="form-group form-check align-self-center">
+									<input id="logged" class="form-check-input" type="checkbox" value="">
+									<label class="form-check-label">remember me</label>
+								</div>
+								<button type="submit" id="log-pass-log" class="btn btn-success align-self-center"><span class="icon-enter"></span> Login</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal" id="edit-npo-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Edit profile</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						</div>
+						<div class="modal-body">
+							<form>
+								<div class="form-group">
+									<label for="title">Title:</label>
+									<input type="text" class="form-control" id="title-npo" name="title-npo" required="">
+								</div>
+								<div class="form-group">
+									<label for="description">Description:</label>
+									<textarea class="form-control" id="description-npo" name="description-npo" rows="5" required=""></textarea>
+								</div>
+								<div class="form-group">
+									<label for="location">Location:</label>
+									<input type="text" class="form-control" id="location-npo" name="location-npo" required="">
+								</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-success">Apply changes</button>
+						</div>
 						</form>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="modal" id="edit-npo-modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Edit profile</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<div class="modal" id="edit-sponsors-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Edit profile</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
+						</div>
+						<div class="modal-body">
+							<form>
+								<div class="form-group">
+									<label for="title">Title:</label>
+									<input type="text" class="form-control" id="title-sponsor" name="title" required="">
+								</div>
+								<div class="form-group">
+									<label for="description">Description:</label>
+									<textarea class="form-control" id="description-sponsor" name="description" rows="5" required=""></textarea>
+								</div>
+								<div class="form-group">
+									<label for="location">Activity:</label>
+									<input type="text" class="form-control" id="activity-sponsor" name="activity-sponsor" required="">
+								</div>
+								<div class="form-group">
+									<label for="location">Location:</label>
+									<input type="text" class="form-control" id="location-sponsor" name="location" required="">
+								</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-success">Apply changes</button>
+						</div>
+						</form>
 					</div>
-					<div class="modal-body">
-						<form>
-							<div class="form-group">
-								<label for="title">Title:</label>
-								<input type="text" class="form-control" id="title-npo" name="title-npo" required="">
-							</div>
-							<div class="form-group">
-								<label for="description">Description:</label>
-								<textarea class="form-control" id="description-npo" name="description-npo" rows="5" required=""></textarea>
-							</div>
-							<div class="form-group">
-								<label for="location">Location:</label>
-								<input type="text" class="form-control" id="location-npo" name="location-npo" required="">
-							</div>
-					</div>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Apply changes</button>
-					</div>
-					</form>
 				</div>
 			</div>
-		</div>
-		<div class="modal" id="edit-sponsors-modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Edit profile</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<div class="modal" id="review-employee" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Employee review</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
-					</div>
-					<div class="modal-body">
-						<form>
-							<div class="form-group">
-								<label for="title">Title:</label>
-								<input type="text" class="form-control" id="title-sponsor" name="title" required="">
-							</div>
+						</div>
+						<div class="modal-body">
 							<div class="form-group">
 								<label for="description">Description:</label>
 								<textarea class="form-control" id="description-sponsor" name="description" rows="5" required=""></textarea>
 							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-success" id="buy-resource-btn">Purchase review</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal" id="donation-npos-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Please enter the size of the donation and confirm</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						</div>
+						<div class="modal-body">
 							<div class="form-group">
-								<label for="location">Activity:</label>
-								<input type="text" class="form-control" id="activity-sponsor" name="activity-sponsor" required="">
+								<label for="location">Count of honeycombs:</label>
+								<input type="text" class="form-control" id="activity-sponsor" name="honeycombs-donate" required="">
 							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-success" id="buy-resource-btn">Confirm donation</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal" id="description-npos-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Non-profit organization description</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						</div>
+						<div class="modal-body">
 							<div class="form-group">
-								<label for="location">Location:</label>
-								<input type="text" class="form-control" id="location-sponsor" name="location" required="">
+								<label>BeeSocial is best social project you`ve ever seen</label>
 							</div>
-					</div>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Apply changes</button>
-					</div>
-					</form>
-				</div>
-			</div>
-		</div>
-		<div class="modal" id="review-employee" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Employee review</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label for="description">Description:</label>
-							<textarea class="form-control" id="description-sponsor" name="description" rows="5" required=""></textarea>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success" id="buy-resource-btn">Purchase review</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="modal" id="donation-npos-modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Please enter the size of the donation and confirm</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label for="location">Count of honeycombs:</label>
-							<input type="text" class="form-control" id="activity-sponsor" name="honeycombs-donate" required="">
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success" id="buy-resource-btn">Confirm donation</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="modal" id="description-npos-modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Non-profit organization description</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label>BeeSocial is best social project you`ve ever seen</label>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="modal" id="got-token-modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Congratulations!</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<div class="modal" id="got-token-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Congratulations!</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<h4>You just received <span id="tokencount" class="badge badge-secondary">N/A</span> tokens!</h4>
-							<label>Now you can donate them to non-profit organization</label>
-							<a class="btn btn-success btn-lg" href="#npos" role="button">donate</a>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<h4>You just received <span id="tokencount" class="badge badge-secondary">N/A</span> tokens!</h4>
+								<label>Now you can donate them to non-profit organization</label>
+								<a class="btn btn-success btn-lg" href="#npos" role="button">donate</a>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 	</article>
 	<div class="lding">
 		<div class="lds-css ng-scope">
