@@ -16,6 +16,7 @@ let resourceModal = new Modal($resourceModal);
 let $createProjectModal = document.getElementById('create-project-modal');
 let createProjectModal = new Modal($createProjectModal);
 let $resourceItem = document.querySelector('#resource-item');
+let $donationNpos = document.querySelector('#donation-npos');
 let modalAuth = new Modal(document.getElementById('auth'));
 let editNpoModal = new Modal(document.getElementById('edit-npo-modal'));
 let editSponsorsModal = new Modal(document.getElementById('edit-sponsors-modal'));
@@ -23,6 +24,7 @@ let modalSignin = new Modal(document.getElementById('signin-modal'));
 let modalReviewEmployee = new Modal(document.getElementById('review-employee'));
 let modalDonateNpos = new Modal(document.getElementById('donation-npos-modal'));
 let modalDescriptionNpos = new Modal(document.getElementById('description-npos-modal'));
+let modalGotTokens = new Modal(document.getElementById('got-token-modal'));
 let resourceItemSelected;
 
 let arr = document.querySelector('#projects').querySelectorAll('.btn');
@@ -65,6 +67,7 @@ window.addEventListener('hashchange', function () {
 						$mainPage.style.display = 'none';
 						$purchasedResourcesPage.style.display = 'none';
 						$projectsPage.style.display = 'none';
+						$donationNpos.style.display = 'none';
 						$resourcesPage.style.display = 'block';
 						//getResources();
 					};
@@ -74,6 +77,7 @@ window.addEventListener('hashchange', function () {
 						$mainPage.style.display = 'none';
 						$purchasedResourcesPage.style.display = 'none';
 						$resourcesPage.style.display = 'none';
+						$donationNpos.style.display = 'none';
 						$projectsPage.style.display = 'block';
 					};
 					break;
@@ -82,10 +86,21 @@ window.addEventListener('hashchange', function () {
 						$mainPage.style.display = 'none';
 						$resourcesPage.style.display = 'none';
 						$projectsPage.style.display = 'none';
+						$donationNpos.style.display = 'none';
 						$purchasedResourcesPage.style.display = 'block';
 						showPurchasedResources();
 					};
 					break;
+					case 'npos':
+					{
+						$mainPage.style.display = 'none';
+						$resourcesPage.style.display = 'none';
+						$projectsPage.style.display = 'none';
+						$purchasedResourcesPage.style.display = 'none';
+						$donationNpos.style.display = 'block';
+						modalGotTokens.hide();
+
+					}
 			}
 		}
 	} else {

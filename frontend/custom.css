@@ -20,7 +20,7 @@
 	margin: .5rem;
 }
 
-#projects-page, #purchased-resources-page, #resources-page, #encouraging-employees, #donation-npos {
+#projects-page, #purchased-resources-page, #resources-page, #encouraging-employees, #donation-npos, #resource-item {
 	display: none;
 }
 
@@ -35,6 +35,12 @@
 
 .create-project {
 	margin: .3rem .5rem;
+}
+
+.loginbuttons {
+	display: none;
+	margin-right: .5rem;
+	color: #fff;
 }
 
 footer {
