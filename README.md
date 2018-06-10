@@ -4,8 +4,8 @@ Bee Social project on EOS hackathon
 # Smart contact
 ## EOS GLOBAL Hackathon, Hong Kong
 - 24 hours without a dream 
-- One developer
-- 1100 lines
+- One C++ developer
+- 1100 lines in C++
 - 16 abi methods
 - 10 abi tables  
  

@@ -2,7 +2,7 @@ let options = {
 	httpEndpoint: 'http://192.168.43.240:8888',
 	//httpEndpoint: 'http://91.201.41.253:8888',
 	debug: false,
-	keyProvider: '5JpNgFavmjG1Jp6m2hjpMFXF4Mhzpe8Bt2TzBy1dZjH3gFbE5jK',
+	keyProvider: '5JQBB6teiepsC62GArfXbAC5XekU2m4KCmK6iNgne8fhSyCaiop',
 	//authorization: 'alice@active',
 	sign: true,
 	//broadcast: true
@@ -41,10 +41,8 @@ let getResources = () => {
 		json: true
 	}, (err, res) => {
 		if ( ! err) {
-			console.log(res);
 			res.rows.forEach(item => {
-				console.log('resource', item);
-				
+				//console.log('resource', item);
 				let $newItem = $resourceItem.cloneNode(true);
 				$newItem.querySelector('.card-title').innerHTML = item.title;
 				$newItem.querySelector('.card-text').innerHTML = item.description;
@@ -60,13 +58,49 @@ let getResources = () => {
 				});
 				$newItem.style.display = 'block';
 				$resources.appendChild($newItem);
-				
 			});
 		}
 		else console.error(err);
 	});
 };
 getResources();
+
+let project_id;
+let getProjects = () => {
+	eos.getTableRows({
+		scope: 'beesocial',
+		code: 'beesocial',
+		table: 'projects',
+		json: true
+	}, (err, res) => {
+		if ( ! err) {
+			console.log(res);
+			res.rows.forEach(item => {
+				console.log('resource', item);
+				let $newItem = $resourceItem.cloneNode(true);
+				$newItem.querySelector('.card-title').innerHTML = item.title;
+				$newItem.querySelector('.card-text').innerHTML = item.description;
+				$newItem.setAttribute('data-id', item.id);
+				$newItem.querySelector('button').addEventListener('click', () => {
+					resourceItemSelected = item;
+					project_id = item.id;
+					$projectModal.querySelector('#project-title').innerHTML = item.title;
+					$projectModal.querySelector('#project-description').innerHTML = item.description;
+					$projectModal.querySelector('#project-cp').innerHTML = 'Number of participants available: ' + item.required - item.hired;
+					$projectModal.querySelector('#non-profits-name').innerHTML = item.npo;
+					$projectModal.querySelector('#project-time').innerHTML = 'Date: ' + item.date_to;
+					$projectModal.querySelector('#project-skills').innerHTML = item.skills[0];
+					$projectModal.querySelector('#project-cost').innerHTML = 'Amount for participation:' + item.price;
+					projectModal.show();
+				});
+				$newItem.style.display = 'block';
+				$projects.appendChild($newItem);
+			});
+		}
+		else console.error(err);
+	});
+};
+getProjects();
 
 let getWorkersTable = () => {
 	eos.getTableRows({
@@ -153,6 +187,45 @@ $createResourceModalForm.addEventListener('submit', e => {
 			loadingHide();
 			$createResourceModalForm.reset();
 			createResourceModal.hide();
+			//window.location.hash = '#resources/' + id;
+		});
+	});
+});
+
+let $createProjectsModalForm = $createProjectModal.querySelector('form');
+$createProjectsModalForm.addEventListener('submit', e => {
+	e.preventDefault();
+	let title = this['title-project'].value,
+		description = this['description-project'].value,
+		skills = this['skills-project'].value,
+		dateFrom = '2016-09-05T20:15:11', //this['date-from-resource'].value,
+		dateTo = '2019-09-05T20:15:11', //this['date-to-resource'].value,
+		price = this['price-project'].value,
+		required = this['required-project'].value,
+		npo = 'npoa', //username,
+		author = username;
+	auth(() => {
+		loadingShow();
+		eos.transaction('beesocial', (operation) => {
+			operation.project(npo, title, description, [skills], dateFrom, dateTo, price + ' SOCIAL', parseInt(required), {authorization: author}); // alice@active
+			loadingHide();
+			$createProjectsModalForm.reset();
+			createProjectModal.hide();
+			//window.location.hash = '#resources/' + id;
+		});
+	});
+});
+
+document.querySelector('#join-project-btn').addEventListener('click', e => {
+	e.preventDefault();
+	let account = username;
+	auth(() => {
+		loadingShow();
+		eos.transaction('beesocial', (operation) => { // a;ksmdakslcd
+			operation.request(account, project_id, 0, {authorization: author});
+			loadingHide();
+			$createProjectsModalForm.reset();
+			createProjectModal.hide();
 			//window.location.hash = '#resources/' + id;
 		});
 	});
