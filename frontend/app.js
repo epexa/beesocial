@@ -65,6 +65,7 @@ let getResources = () => {
 };
 getResources();
 
+let project_id;
 let getProjects = () => {
 	eos.getTableRows({
 		scope: 'beesocial',
@@ -82,6 +83,7 @@ let getProjects = () => {
 				$newItem.setAttribute('data-id', item.id);
 				$newItem.querySelector('button').addEventListener('click', () => {
 					resourceItemSelected = item;
+					project_id = item.id;
 					$projectModal.querySelector('#project-title').innerHTML = item.title;
 					$projectModal.querySelector('#project-description').innerHTML = item.description;
 					$projectModal.querySelector('#project-cp').innerHTML = 'Number of participants available: ' + item.required - item.hired;
@@ -206,6 +208,21 @@ $createProjectsModalForm.addEventListener('submit', e => {
 		loadingShow();
 		eos.transaction('beesocial', (operation) => {
 			operation.project(npo, title, description, [skills], dateFrom, dateTo, price + ' SOCIAL', parseInt(required), {authorization: author}); // alice@active
+			loadingHide();
+			$createProjectsModalForm.reset();
+			createProjectModal.hide();
+			//window.location.hash = '#resources/' + id;
+		});
+	});
+});
+
+document.querySelector('#join-project-btn').addEventListener('click', e => {
+	e.preventDefault();
+	let account = username;
+	auth(() => {
+		loadingShow();
+		eos.transaction('beesocial', (operation) => { // a;ksmdakslcd
+			operation.request(account, project_id, 0, {authorization: author});
 			loadingHide();
 			$createProjectsModalForm.reset();
 			createProjectModal.hide();
