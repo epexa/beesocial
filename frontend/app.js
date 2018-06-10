@@ -2,7 +2,7 @@ let options = {
 	httpEndpoint: 'http://192.168.43.240:8888',
 	//httpEndpoint: 'http://91.201.41.253:8888',
 	debug: false,
-	keyProvider: '5JpNgFavmjG1Jp6m2hjpMFXF4Mhzpe8Bt2TzBy1dZjH3gFbE5jK',
+	keyProvider: '5Hswjq1qwrSG4rq6i9oB2Hu2d8Pj8mJq79ySWbGioWQ78s5JR7c',
 	//authorization: 'alice@active',
 	sign: true,
 	//broadcast: true
@@ -41,10 +41,8 @@ let getResources = () => {
 		json: true
 	}, (err, res) => {
 		if ( ! err) {
-			console.log(res);
 			res.rows.forEach(item => {
-				console.log('resource', item);
-				
+				//console.log('resource', item);
 				let $newItem = $resourceItem.cloneNode(true);
 				$newItem.querySelector('.card-title').innerHTML = item.title;
 				$newItem.querySelector('.card-text').innerHTML = item.description;
@@ -60,13 +58,45 @@ let getResources = () => {
 				});
 				$newItem.style.display = 'block';
 				$resources.appendChild($newItem);
-				
 			});
 		}
 		else console.error(err);
 	});
 };
 getResources();
+
+let getProjects = () => {
+	eos.getTableRows({
+		scope: 'beesocial',
+		code: 'beesocial',
+		table: 'projects',
+		json: true
+	}, (err, res) => {
+		if ( ! err) {
+			console.log(res);
+			res.rows.forEach(item => {
+				console.log('resource', item);
+				let $newItem = $resourceItem.cloneNode(true);
+				$newItem.querySelector('.card-title').innerHTML = item.title;
+				$newItem.querySelector('.card-text').innerHTML = item.description;
+				$newItem.setAttribute('data-id', item.id);
+				$newItem.querySelector('button').addEventListener('click', () => {
+					resourceItemSelected = item;
+					$resourceModal.querySelector('#resource-title').innerHTML = item.title;
+					$resourceModal.querySelector('#resource-description').innerHTML = item.description;
+					$resourceModal.querySelector('#resource-how-get').innerHTML = item.how_get;
+					$resourceModal.querySelector('#resource-contacts').innerHTML = item.contacts;
+					$resourceModal.querySelector('#resource-combs').innerHTML = item.price;
+					resourceModal.show();
+				});
+				$newItem.style.display = 'block';
+				$projects.appendChild($newItem);
+			});
+		}
+		else console.error(err);
+	});
+};
+getProjects();
 
 let getWorkersTable = () => {
 	eos.getTableRows({
@@ -153,6 +183,30 @@ $createResourceModalForm.addEventListener('submit', e => {
 			loadingHide();
 			$createResourceModalForm.reset();
 			createResourceModal.hide();
+			//window.location.hash = '#resources/' + id;
+		});
+	});
+});
+
+let $createProjectsModalForm = $createProjectModal.querySelector('form');
+$createProjectsModalForm.addEventListener('submit', e => {
+	e.preventDefault();
+	let title = this['title-project'].value,
+		description = this['description-project'].value,
+		skills = this['skills-project'].value,
+		dateFrom = '2016-09-05T20:15:11', //this['date-from-resource'].value,
+		dateTo = '2019-09-05T20:15:11', //this['date-to-resource'].value,
+		price = this['price-project'].value,
+		required = this['required-project'].value,
+		npo = 'npoa', //username,
+		author = username;
+	auth(() => {
+		loadingShow();
+		eos.transaction('beesocial', (operation) => {
+			operation.project(npo, title, description, [skills], dateFrom, dateTo, price + ' SOCIAL', parseInt(required), {authorization: author}); // alice@active
+			loadingHide();
+			$createProjectsModalForm.reset();
+			createProjectModal.hide();
 			//window.location.hash = '#resources/' + id;
 		});
 	});
