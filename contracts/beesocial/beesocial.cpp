@@ -328,8 +328,10 @@ public:
                 s.how_get = how_get;
                 s.contacts = contacts;
                 s.price = price;
+                s.buyer = 0;
             });
         } else {
+            eosio_assert(!it->buyer, "Resource solded");
             idx.modify(it, 0, [&](auto& s){
                 s.status = status;
                 s.category = category;
@@ -339,6 +341,50 @@ public:
                 s.price = price;
             });
         }
+    }
+
+    // @abi action
+    void buy(
+        account_name account,
+        uint64_t resource
+    ) {
+        require_recipient(account);
+
+        auto sidx = sponsors.template get_index<N(sponsor.accounts)>();
+        auto sit = sidx.find(account);
+        eosio_assert(sit != sidx.end(), "Sponsor doesn't exist");
+        eosio_assert((*sit).enabled, "Sponsor is disabled");
+
+        auto rit = resources.find(resource);
+        eosio_assert(rit != resources.end(), "Resource doesn't exist");
+        eosio_assert(!(*rit).buyer, "Resource solded");
+
+        auto nidx = npos.template get_index<N(npo.accounts)>();
+        auto nit = nidx.find(rit->account);
+
+        action(
+            permission_level{ (*nit).account, N(active) },
+            N(eosio.token), N(transfer),
+            std::make_tuple((*nit).account, _self, rit->price, std::string("Buy resource from Sponsor via beesocial"))
+        ).send();
+
+        action(
+            permission_level{ _self, N(active) },
+            N(eosio.token), N(transfer),
+            std::make_tuple(_self, (*sit).account, rit->price, std::string("Sold resource to NPO via beesocial"))
+        ).send();
+
+        nidx.modify(nit, 0, [&](auto& n){
+           n.reward.amount -= rit->price.amount;
+        });
+
+        sidx.modify(sit, 0, [&](auto& s){
+           s.reward.amount += rit->price.amount;
+        });
+
+        resources.modify(rit, 0, [&](auto& r) {
+           r.buyer = (*nit).account;
+        });
     }
 
     // @abi action
@@ -970,6 +1016,7 @@ private:
         string how_get;
         string contacts;
         asset price;
+        account_name buyer;
 
         uint64_t primary_key() const {
             return id;
@@ -983,7 +1030,7 @@ private:
             return beesocial::string_to_key256(get_key());
         }
 
-        EOSLIB_SERIALIZE(resource_t, (id)(account)(title)(status)(category)(description)(how_get)(contacts)(price));
+        EOSLIB_SERIALIZE(resource_t, (id)(account)(title)(status)(category)(description)(how_get)(contacts)(price)(buyer));
     };
 
     using resource_index = multi_index<
@@ -1096,4 +1143,4 @@ private:
     vote_index votes;
 };
 
-EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete)(reward)(vote))
+EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(buy)(project)(request)(deposit)(cancel)(fail)(complete)(reward)(vote))
