@@ -2,7 +2,7 @@ let options = {
 	httpEndpoint: 'http://192.168.43.240:8888',
 	//httpEndpoint: 'http://91.201.41.253:8888',
 	debug: false,
-	keyProvider: '5Hswjq1qwrSG4rq6i9oB2Hu2d8Pj8mJq79ySWbGioWQ78s5JR7c',
+	keyProvider: '5JQBB6teiepsC62GArfXbAC5XekU2m4KCmK6iNgne8fhSyCaiop',
 	//authorization: 'alice@active',
 	sign: true,
 	//broadcast: true
@@ -82,12 +82,14 @@ let getProjects = () => {
 				$newItem.setAttribute('data-id', item.id);
 				$newItem.querySelector('button').addEventListener('click', () => {
 					resourceItemSelected = item;
-					$resourceModal.querySelector('#resource-title').innerHTML = item.title;
-					$resourceModal.querySelector('#resource-description').innerHTML = item.description;
-					$resourceModal.querySelector('#resource-how-get').innerHTML = item.how_get;
-					$resourceModal.querySelector('#resource-contacts').innerHTML = item.contacts;
-					$resourceModal.querySelector('#resource-combs').innerHTML = item.price;
-					resourceModal.show();
+					$projectModal.querySelector('#project-title').innerHTML = item.title;
+					$projectModal.querySelector('#project-description').innerHTML = item.description;
+					$projectModal.querySelector('#project-cp').innerHTML = item.required - item.hired;
+					$projectModal.querySelector('#non-profits-name').innerHTML = item.npo;
+					$projectModal.querySelector('#project-time').innerHTML = item.date_to;
+					$projectModal.querySelector('#project-skills').innerHTML = item.skills[0];
+					$projectModal.querySelector('#project-cost').innerHTML = item.price;
+					projectModal.show();
 				});
 				$newItem.style.display = 'block';
 				$projects.appendChild($newItem);
