@@ -20,7 +20,7 @@
 	margin: .5rem;
 }
 
-#projects-page, #purchased-resources-page, #resources-page, #encouraging-employees, #donation-npos {
+#projects-page, #purchased-resources-page, #resources-page, #encouraging-employees, #donation-npos, #resource-item {
 	display: none;
 }
 

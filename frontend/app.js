@@ -45,7 +45,7 @@ let getResources = () => {
 			res.rows.forEach(item => {
 				console.log('resource', item);
 				
-				/* let $newItem = $resourceItem.cloneNode(true);
+				let $newItem = $resourceItem.cloneNode(true);
 				$newItem.querySelector('.card-title').innerHTML = item.title;
 				$newItem.querySelector('.card-text').innerHTML = item.description;
 				$newItem.setAttribute('data-id', item.id);
@@ -53,13 +53,13 @@ let getResources = () => {
 					resourceItemSelected = item;
 					$resourceModal.querySelector('#resource-title').innerHTML = item.title;
 					$resourceModal.querySelector('#resource-description').innerHTML = item.description;
-					$resourceModal.querySelector('#resource-how-get').innerHTML = item.howget;
+					$resourceModal.querySelector('#resource-how-get').innerHTML = item.how_get;
 					$resourceModal.querySelector('#resource-contacts').innerHTML = item.contacts;
-					$resourceModal.querySelector('#resource-price').innerHTML = item.price;
+					$resourceModal.querySelector('#resource-combs').innerHTML = item.price;
 					resourceModal.show();
 				});
 				$newItem.style.display = 'block';
-				$resources.appendChild($newItem); */
+				$resources.appendChild($newItem);
 				
 			});
 		}
@@ -106,7 +106,8 @@ let $login = document.getElementById('login');
 let $logout = document.getElementById('logout');
 
 let callbackAuth;
-let username;
+let username = 'beesocial';
+let wif = '5JpNgFavmjG1Jp6m2hjpMFXF4Mhzpe8Bt2TzBy1dZjH3gFbE5jK';
 
 document.getElementById('form-login-pass').addEventListener('submit', e => {
 	e.preventDefault();
@@ -114,7 +115,7 @@ document.getElementById('form-login-pass').addEventListener('submit', e => {
 		user = document.getElementById('input-user').value,
 		pass = document.getElementById('input-pass').value;
 	username = user;
-	let wif = pass;
+	wif = pass;
 	log ? localStorage.username = username : '';
 	log ? localStorage.wif = JSON.stringify(wif) : {};
 	$login.style.display = 'none';
