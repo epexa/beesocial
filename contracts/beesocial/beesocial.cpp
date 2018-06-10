@@ -9,6 +9,8 @@ using eosio::key256;
 using eosio::time_point_sec;
 using eosio::asset;
 using eosio::name;
+using eosio::action;
+using eosio::permission_level;
 
 using eosio::multi_index;
 using eosio::const_mem_fun;
@@ -23,7 +25,9 @@ using std::to_string;
 using std::set;
 using std::map;
 
-#define BEESOCIAL_SYMBOL (eosio::string_to_symbol(4, "BEOS"))
+#define BEESOCIAL_SYMBOL (eosio::string_to_symbol(4, "SOCIAL"))
+#define BEESOCIAL_1_PERCENT 1000
+#define BEESOCIAL_100_PERCENT (BEESOCIAL_1_PERCENT * 100)
 
 enum project_status {
     project_created = 0,
@@ -53,7 +57,8 @@ public:
           categorities(_self, _self),
           resources(_self, _self),
           projects(_self, _self),
-          requests(_self, _self) {
+          requests(_self, _self),
+          votes(_self, _self) {
     }
 
     // @abi action
@@ -96,10 +101,20 @@ public:
         validate_location(location);
         validate_skills(worker_skills);
 
+        require_recipient(account);
+
         auto idx = workers.template get_index<N(worker.accounts)>();
         auto it = idx.find(account);
 
         if (it == idx.end()) {
+            asset reward(10000, BEESOCIAL_SYMBOL); // 1.0000 SOCIAL
+
+            action(
+                permission_level{ _self, N(active) },
+                N(eosio.token), N(issue),
+                std::make_tuple(account, reward, std::string("Registration reward from beesocial"))
+            ).send();
+
             workers.emplace(_self, [&](auto& s) {
                 s.id = workers.available_primary_key();
                 s.account = account;
@@ -110,9 +125,10 @@ public:
                 s.positive = 0;
                 s.negative = 0;
                 s.skills = worker_skills;
-                s.reward = asset(0, BEESOCIAL_SYMBOL);
+                s.reward = reward;
                 s.enabled = enabled;
             });
+
         } else {
             idx.modify(it, 0, [&](auto& s){
                 s.full_name = full_name;
@@ -158,6 +174,8 @@ public:
     ) {
         print("bee_social::npo\n");
 
+        require_recipient(account);
+
         validate_title(title);
         validate_description(description);
         validate_location(location);
@@ -166,6 +184,14 @@ public:
         auto it = idx.find(account);
 
         if (it == idx.end()) {
+            asset reward(100000, BEESOCIAL_SYMBOL); // 10.0000 SOCIAL
+
+            action(
+                permission_level{ _self, N(active) },
+                N(eosio.token), N(issue),
+                std::make_tuple(account, reward, std::string("Registration reward from beesocial"))
+            ).send();
+
             npos.emplace(_self, [&](auto& s) {
                 s.id = npos.available_primary_key();
                 s.account = account;
@@ -174,7 +200,7 @@ public:
                 s.location = location;
                 s.positive = 0;
                 s.negative = 0;
-                s.reward = asset(0, BEESOCIAL_SYMBOL);
+                s.reward = reward;
                 s.enabled = enabled;
             });
         } else {
@@ -198,6 +224,7 @@ public:
     ) {
         print("bee_social::sponsor\n");
 
+        require_recipient(account);
         validate_title(title);
         validate_description(description);
 
@@ -205,6 +232,14 @@ public:
         auto it = idx.find(account);
 
         if (it == idx.end()) {
+            asset reward(10000, BEESOCIAL_SYMBOL); // 1.0000 SOCIAL
+
+            action(
+                permission_level{ _self, N(active) },
+                N(eosio.token), N(issue),
+                std::make_tuple(account, reward, std::string("Registration reward from beesocial"))
+            ).send();
+
             sponsors.emplace(_self, [&](auto& s) {
                 s.id = sponsors.available_primary_key();
                 s.account = account;
@@ -213,7 +248,7 @@ public:
                 s.location = location;
                 s.positive = 0;
                 s.negative = 0;
-                s.reward = asset(0, BEESOCIAL_SYMBOL);
+                s.reward = reward;
                 s.activities = activities;
                 s.enabled = enabled;
             });
@@ -372,15 +407,16 @@ public:
     }
 
     // @abi action
-    void request(const uint64_t project, const uint64_t worker, const uint8_t status) {
+    void request(const account_name worker, const uint64_t project, const uint8_t status) {
         print("bee_social::request\n");
 
         auto pit = projects.find(project);
         eosio_assert(pit != projects.end(), "Project doesn't exist");
         eosio_assert((*pit).status == project_started, "Project isn't started");
 
-        auto wit = workers.find(worker);
-        eosio_assert(wit != workers.end(), "Worker doesn't exist");
+        auto widx = workers.template get_index<N(worker.accounts)>();
+        auto wit = widx.find(worker);
+        eosio_assert(wit != widx.end(), "Worker doesn't exist");
         eosio_assert((*wit).enabled, "Worker is disabled");
 
         eosio_assert(status == request_enabled || status == request_disabled, "Invalid status");
@@ -405,7 +441,7 @@ public:
             requests.emplace(_self, [&](auto& s) {
                 s.id = requests.available_primary_key();
                 s.project = project;
-                s.worker = worker;
+                s.worker = (*wit).id;
                 s.status = status;
                 s.created = time_point_sec(now());
                 s.done = time_point_sec::min();
@@ -445,7 +481,17 @@ public:
         eosio_assert(pit != projects.end(), "Project doesn't exist");
         eosio_assert((*pit).status == project_created, "Project can't start after started/canceled/complete.");
 
-        // TRANSFER from npo
+        auto nit = npos.find((*pit).npo);
+
+        asset reward = (*pit).price;
+        reward.amount *= (*pit).hired;
+        reward.amount += reward.amount * 2 * BEESOCIAL_1_PERCENT / BEESOCIAL_100_PERCENT;
+
+        action(
+            permission_level{ (*nit).account, N(active) },
+            N(eosio.token), N(transfer),
+            std::make_tuple((*nit).account, _self, reward, std::string("Deposit from NPO to beesocial"))
+        ).send();
 
         projects.modify(pit, 0, [&](auto& p){
            p.status = project_started;
@@ -513,11 +559,23 @@ public:
                 idx.modify(it, 0, [&](auto& s) {
                     s.done = t;
                     s.status = request_complete;
-                    s.reward = (*pit).price;
+                    s.reward.amount += (*pit).price.amount;
                 });
-                // TRANSFER to worker
+
+                action(
+                    permission_level{ _self, N(active) },
+                    N(eosio.token), N(transfer),
+                    std::make_tuple(_self, wit->account, (*pit).price, std::string("Payment from NPO via beesocial"))
+                ).send();
+
                 cnt++;
             }
+        }
+
+        asset reim = (*pit).price;
+
+        if (cnt != (*pit).hired) {
+            reim.amount *= ((*pit).hired - cnt);
         }
 
         projects.modify(pit, 0, [&](auto& p) {
@@ -525,7 +583,20 @@ public:
             p.rewarded = cnt;
             p.done = t;
         });
-            // TRANSFER to npo
+
+        if (reim.amount) {
+            auto nit = npos.find((*pit).npo);
+
+            action(
+                permission_level{_self, N(active)},
+                N(eosio.token), N(transfer),
+                std::make_tuple(_self, (*nit).account, reim, std::string("Return from beesocial"))
+            ).send();
+
+            npos.modify(nit, 0, [&](auto& n){
+                n.reward.amount += reim.amount;
+            });
+        }
     }
 
     // @abi action
@@ -553,15 +624,55 @@ public:
             });
         }
 
+        asset reward(0, BEESOCIAL_SYMBOL);
+
         for (auto qit = selected_qp.begin(); qit != selected_qp.end(); ++qit) {
             auto qp = (*qit).second;
             auto qv = selected_qv[(*qit).first];
             auto v = (std::log(qp) * 10 * 10000 /* symbol precision */) / std::log(qv);
 
-            npos.modify(npos.find((*qit).first), 0, [&](auto& n){
-               n.reward.amount += v;
+            auto nit = npos.find((*qit).first);
+            npos.modify(nit, 0, [&](auto& n){
+                reward.amount += v;
+                n.reward.amount += v;
             });
+
+            action(
+                permission_level{ _self, N(active) },
+                N(eosio.token), N(transfer),
+                std::make_tuple(_self, nit->account, reward, std::string("Reward from beesocial"))
+            ).send();
         }
+    }
+
+    // @abi action
+    void vote(
+        account_name from,
+        account_name to,
+        string description,
+        int8_t state
+    ) {
+        print("bee_social::vote\n");
+
+        require_recipient(from);
+        require_recipient(to);
+        validate_description(description);
+
+        eosio_assert(-1 == state || 0 == state || 1 == state, "Invalid state");
+
+        auto key = (static_cast<uint128_t>(from) << 64) + to;
+        auto idx = votes.template get_index<N(vote.accounts)>();
+        auto it = idx.find(key);
+
+        eosio_assert(it == idx.end(), "Vote already exists");
+
+        votes.emplace(_self, [&](auto& s) {
+            s.id = votes.available_primary_key();
+            s.from = from;
+            s.to = to;
+            s.description = description;
+            s.state = state;
+        });
     }
 
     static key256 string_to_key256(const std::string& src) {
@@ -948,7 +1059,7 @@ private:
             return (static_cast<uint128_t>(project) << 64) + worker;
         }
 
-        EOSLIB_SERIALIZE(request_t, (id)(project)(worker)(created)(status)(reward));
+        EOSLIB_SERIALIZE(request_t, (id)(project)(worker)(created)(done)(status)(reward));
     };
 
     using request_index = multi_index<
@@ -957,6 +1068,32 @@ private:
     >;
 
     request_index requests;
+
+    // @abi table vote i64
+    struct vote_t {
+        uint64_t id;
+        account_name from;
+        account_name to;
+        string description;
+        int8_t state;
+
+        uint64_t primary_key() const {
+            return id;
+        }
+
+        uint128_t by_account() const {
+            return (static_cast<uint128_t>(from) << 64) + to;
+        }
+
+        EOSLIB_SERIALIZE(vote_t, (id)(from)(to)(description)(state));
+    };
+
+    using vote_index = multi_index<
+        N(votes), vote_t,
+        indexed_by<N(vote.accounts), const_mem_fun<vote_t, uint128_t, &vote_t::by_account>>
+    >;
+
+    vote_index votes;
 };
 
-EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete)(reward))
+EOSIO_ABI(beesocial,(skill)(worker)(activity)(sponsor)(npo)(category)(resource)(project)(request)(deposit)(cancel)(fail)(complete)(reward)(vote))
