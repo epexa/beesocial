@@ -37,6 +37,12 @@
 	margin: .3rem .5rem;
 }
 
+.loginbuttons {
+	display: none;
+	margin-right: .5rem;
+	color: #fff;
+}
+
 footer {
 	position: absolute;
 	bottom: 0;
