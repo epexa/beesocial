@@ -33,3 +33,11 @@ cleos push action beesocial sponsor '["sponsorb", "SPONSOR Title 2", "SPONSOR De
 
 cleos push action beesocial project '["npoa", "NPO 1 Project 1", "NPO DESCRIPTION 1", [0, 1], "2018-07-01T00:00:00", "2018-07-02T00:00:00", "1.0000 BEOS", 2]' -p npoa
 cleos push action beesocial project '["npob", "NPO 2 Project 2", "NPO DESCRIPTION 2", [1, 2], "2018-07-02T00:00:00", "2018-07-03T00:00:00", "1.0000 BEOS", 3]' -p npob
+
+cleos push action beesocial deposit '[0]' -p npoa
+cleos push action beesocial cancel '[1]' -p npob
+
+
+cleos push action beesocial request '["alice",0,0]' -p alice
+cleos push action beesocial request '["bob",0,0]' -p bob
+cleos push action beesocial request '["dave",0,0]' -p dave

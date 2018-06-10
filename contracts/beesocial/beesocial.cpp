@@ -372,15 +372,17 @@ public:
     }
 
     // @abi action
-    void request(const uint64_t project, const uint64_t worker, const uint8_t status) {
+    void request(const account_name worker, const uint64_t project, const uint8_t status) {
         print("bee_social::request\n");
 
         auto pit = projects.find(project);
         eosio_assert(pit != projects.end(), "Project doesn't exist");
         eosio_assert((*pit).status == project_started, "Project isn't started");
 
-        auto wit = workers.find(worker);
-        eosio_assert(wit != workers.end(), "Worker doesn't exist");
+
+        auto widx = workers.template get_index<N(worker.accounts)>();
+        auto wit = widx.find(worker);
+        eosio_assert(wit != widx.end(), "Worker doesn't exist");
         eosio_assert((*wit).enabled, "Worker is disabled");
 
         eosio_assert(status == request_enabled || status == request_disabled, "Invalid status");
@@ -405,7 +407,7 @@ public:
             requests.emplace(_self, [&](auto& s) {
                 s.id = requests.available_primary_key();
                 s.project = project;
-                s.worker = worker;
+                s.worker = (*wit).id;
                 s.status = status;
                 s.created = time_point_sec(now());
                 s.done = time_point_sec::min();
@@ -948,7 +950,7 @@ private:
             return (static_cast<uint128_t>(project) << 64) + worker;
         }
 
-        EOSLIB_SERIALIZE(request_t, (id)(project)(worker)(created)(status)(reward));
+        EOSLIB_SERIALIZE(request_t, (id)(project)(worker)(created)(done)(status)(reward));
     };
 
     using request_index = multi_index<
