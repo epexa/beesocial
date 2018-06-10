@@ -84,11 +84,11 @@ let getProjects = () => {
 					resourceItemSelected = item;
 					$projectModal.querySelector('#project-title').innerHTML = item.title;
 					$projectModal.querySelector('#project-description').innerHTML = item.description;
-					$projectModal.querySelector('#project-cp').innerHTML = item.required - item.hired;
+					$projectModal.querySelector('#project-cp').innerHTML = 'Number of participants available: ' + item.required - item.hired;
 					$projectModal.querySelector('#non-profits-name').innerHTML = item.npo;
-					$projectModal.querySelector('#project-time').innerHTML = item.date_to;
+					$projectModal.querySelector('#project-time').innerHTML = 'Date: ' + item.date_to;
 					$projectModal.querySelector('#project-skills').innerHTML = item.skills[0];
-					$projectModal.querySelector('#project-cost').innerHTML = item.price;
+					$projectModal.querySelector('#project-cost').innerHTML = 'Amount for participation:' + item.price;
 					projectModal.show();
 				});
 				$newItem.style.display = 'block';
