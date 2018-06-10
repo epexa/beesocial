@@ -2,7 +2,7 @@ let options = {
 	//httpEndpoint: 'http://192.168.43.240:8888',
 	httpEndpoint: 'http://91.201.41.253:8888',
 	debug: true,
-	keyProvider: '5KSrt18UsHeDEr7CKVnDEHCEEYoRyAvpd4PowHS1DYT1yZCLFHV',
+	keyProvider: '5JBx24Y4w7BvA35JnScvhMYCvRjWoheKKQ6dt1R12ZV4PqB55Gh',
 	//authorization: 'alice@active',
 	sign: true,
 	//broadcast: true
